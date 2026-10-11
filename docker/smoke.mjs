@@ -45,7 +45,10 @@ if (phase === "seed") {
   assert.equal((await post({ action: "reset" })).status, 403);
   const login = await fetch(base + "/api/organizer", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Origin: new URL(base).origin,
+    },
     body: JSON.stringify({ token: "synthetic-docker-test-token" }),
   });
   assert.equal(login.status, 200);
