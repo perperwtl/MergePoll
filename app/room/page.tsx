@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
+import { BrandIcon } from "../brand-icon";
 import {
   ArrowUp,
   ArrowUpRight,
@@ -24,7 +25,6 @@ import {
   FlaskConical,
   Split,
   Send,
-  Activity,
   Copy,
   CheckCircle2,
 } from "lucide-react";
@@ -286,7 +286,7 @@ export default function Home() {
       <aside className="sidebar">
         <a className="brand" href="/">
           <span className="brand-mark">
-            <Activity size={23} />
+            <BrandIcon />
           </span>
           Merge<span>Poll</span>
         </a>

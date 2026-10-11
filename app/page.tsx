@@ -6,9 +6,9 @@ import {
   ShieldCheck,
   CheckCircle2,
   ArrowUp,
-  Activity,
 } from "lucide-react";
 import { SOURCE_URL } from "../lib/project";
+import { BrandIcon } from "./brand-icon";
 export const dynamic = "force-dynamic";
 export default function Introduction() {
   const demo =
@@ -18,7 +18,7 @@ export default function Introduction() {
       <nav className="intro-nav">
         <a className="brand" href="/">
           <span className="brand-mark">
-            <Activity size={23} />
+            <BrandIcon />
           </span>
           Merge<span>Poll</span>
         </a>
