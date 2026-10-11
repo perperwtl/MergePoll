@@ -26,7 +26,7 @@ Use synthetic questions. Explain that this is a one-room prototype with a
 > AGPL-3.0-only, including commercial use, with source-sharing obligations for
 > distributed covered modifications and modified versions offered over a network.
 >
-> Try the live experiment: https://course-pulse-semantic.newreed128.chatgpt.site/
+> Try the live experiment: https://mergepoll.newreed128.chatgpt.site/
 >
 > Source and Docker setup: https://github.com/perperwtl/MergePoll
 >

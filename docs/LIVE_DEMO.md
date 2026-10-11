@@ -1,6 +1,6 @@
 # Live experiment
 
-[Try MergePoll in your browser](https://course-pulse-semantic.newreed128.chatgpt.site/).
+[Try MergePoll in your browser](https://mergepoll.newreed128.chatgpt.site/).
 The experiment is hosted with Codex Sites. No account, installation or personal
 API key is required. The host supplies a dedicated TypeSafe key as a server secret.
 

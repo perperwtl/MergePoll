@@ -89,7 +89,7 @@ The default port is accessible only on your computer. See
 
 ## Live experiment — no setup
 
-**[Open the live MergePoll demo](https://course-pulse-semantic.newreed128.chatgpt.site/)**
+**[Open the live MergePoll demo](https://mergepoll.newreed128.chatgpt.site/)**
 — no self-hosting, account or personal API key required.
 
 1. Enter the Climate Change 101 demo; your browser gets its own sandbox.
