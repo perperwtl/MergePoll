@@ -65,7 +65,8 @@ export default function Home() {
     [settings, setSettings] = useState(false),
     [inspect, setInspect] = useState(false),
     [now, setNow] = useState(Date.now()),
-    [resetConfirm, setResetConfirm] = useState(false);
+    [resetConfirm, setResetConfirm] = useState(false),
+    [composerOpen, setComposerOpen] = useState(false);
   const [login, setLogin] = useState(false),
     [loginToken, setLoginToken] = useState(""),
     [loginBusy, setLoginBusy] = useState(false),
@@ -76,7 +77,8 @@ export default function Home() {
     [threshold, setThreshold] = useState(0.7),
     [published, setPublished] = useState(true);
   const running = useRef(false),
-    retryAt = useRef(0);
+    retryAt = useRef(0),
+    composerInput = useRef<HTMLTextAreaElement>(null);
   async function refresh() {
     try {
       const r = await fetch("/api/room", { cache: "no-store" });
@@ -147,6 +149,7 @@ export default function Home() {
       setRoom((prev) => (!prev || d.revision >= prev.revision ? d : prev));
       if (action === "submit") {
         setText("");
+        setComposerOpen(false);
         setNotice(
           "Your question or request is in. You’re anonymous to the room.",
         );
@@ -194,6 +197,25 @@ export default function Home() {
       return;
     if (now - room.lastRun >= room.interval * 1000) void act("group");
   }, [now, room, mode]);
+  useEffect(() => {
+    if (!composerOpen) return;
+    // On phones the composer is a bottom sheet; close it if the layout widens.
+    const sheet = window.matchMedia("(max-width: 760px)");
+    if (!sheet.matches) return setComposerOpen(false);
+    const close = () => setComposerOpen(false),
+      onKey = (e: KeyboardEvent) => e.key === "Escape" && close(),
+      onResize = () => !sheet.matches && close();
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    composerInput.current?.focus();
+    document.addEventListener("keydown", onKey);
+    sheet.addEventListener("change", onResize);
+    return () => {
+      document.body.style.overflow = overflow;
+      document.removeEventListener("keydown", onKey);
+      sheet.removeEventListener("change", onResize);
+    };
+  }, [composerOpen]);
   useEffect(() => {
     if (!notice) return;
     const t = setTimeout(
@@ -578,7 +600,7 @@ export default function Home() {
             </div>
           </section>
           {error && (
-            <div className="error" role="alert">
+            <div className="error toast" role="alert">
               {error}
               <button aria-label="Dismiss error" onClick={() => setError("")}>
                 <X size={16} />
@@ -588,7 +610,8 @@ export default function Home() {
           {notice && (
             <div
               className={
-                "notice " + (notice === "No new questions" ? "idle-notice" : "")
+                "notice toast " +
+                (notice === "No new questions" ? "idle-notice" : "")
               }
               role="status"
             >
@@ -795,11 +818,30 @@ export default function Home() {
               </div>
             </section>
             <aside className="right-column">
-              <section className="composer">
+              {composerOpen && (
+                <div
+                  className="composer-scrim"
+                  onClick={() => setComposerOpen(false)}
+                />
+              )}
+              <section
+                id="composer"
+                className={"composer " + (composerOpen ? "open" : "")}
+                aria-labelledby="composer-title"
+                {...(composerOpen && { role: "dialog", "aria-modal": true })}
+              >
+                <button
+                  type="button"
+                  className="composer-close"
+                  aria-label="Close"
+                  onClick={() => setComposerOpen(false)}
+                >
+                  <X size={18} />
+                </button>
                 <div className="section-icon">
                   <Plus size={19} />
                 </div>
-                <h2>Wondering about something?</h2>
+                <h2 id="composer-title">Wondering about something?</h2>
                 <p>
                   No raised hands. No names.
                   <br />
@@ -815,6 +857,7 @@ export default function Home() {
                     Your question or request
                   </label>
                   <textarea
+                    ref={composerInput}
                     id="question"
                     value={text}
                     onChange={(e) => setText(e.target.value)}
@@ -896,6 +939,26 @@ export default function Home() {
               </section>
             </aside>
           </div>
+          {!composerOpen && (
+            <div className="ask-bar">
+              <button
+                type="button"
+                aria-controls="composer"
+                aria-haspopup="dialog"
+                disabled={!room.published}
+                onClick={() => setComposerOpen(true)}
+              >
+                <span>
+                  {!room.published
+                    ? "The room is paused for new questions"
+                    : text.trim() || "Ask a question or make a request…"}
+                </span>
+                <span className="ask-bar-icon" aria-hidden="true">
+                  <ArrowUp size={16} />
+                </span>
+              </button>
+            </div>
+          )}
           <footer className="page-footer">
             <span>
               MergePoll{" "}

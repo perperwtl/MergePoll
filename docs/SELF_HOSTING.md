@@ -16,7 +16,7 @@ dependencies, the app build and database migrations. It runs the built Worker
 with Wrangler's local D1 emulator; no Cloudflare account is needed. This is a
 single-machine prototype for local use.
 
-The port is bound to loopback on the host. Inside the container the server listens
+By default the port is bound to loopback on the host. Inside the container the server listens
 on all interfaces, which allows Docker's port forwarding. Without an organizer
 token, localhost organizer controls are shared. The published Sites demo gives
 each visitor a separate sandbox; it does not provide a shared remote event room.
@@ -47,6 +47,13 @@ at runtime; `.env`, `.dev.vars`, local database state and Sites files are
 excluded from the image build context. Never use a `NEXT_PUBLIC_` prefix for secrets.
 
 Set `MERGEPOLL_PORT=8080` in `.env` to use http://localhost:8080 instead.
+
+To let phones and other devices on the same network join, set
+`MERGEPOLL_HOST=0.0.0.0` in `.env`, run `docker compose up -d`, and open
+`http://<this computer's LAN IP>:5173` on the device (on macOS,
+`ipconfig getifaddr en0` prints the IP). Organizer controls stay limited to
+`localhost` unless you sign in with `ORGANIZER_TOKEN`. Only do this on networks
+you trust.
 
 ### Stop, update and back up
 
@@ -79,6 +86,7 @@ Keep the backup private; it contains questions and browser identities.
 | `TYPESAFE_API_KEY` | Optional value in `.env` | Real Jev grouping |
 | `ORGANIZER_TOKEN` | Optional value in `.env` | Private organizer login; sessions expire after 12 hours |
 | `MERGEPOLL_PORT` | `.env`, default 5173 | Host port |
+| `MERGEPOLL_HOST` | `.env`, default 127.0.0.1 | Host address; `0.0.0.0` allows same-network devices |
 | `LOCAL_DEMO` | Container sets `true`; a configured token takes precedence | Local organizer access |
 | `PUBLIC_DEMO` | Container forces `false` | Docker uses one shared room |
 | `DB` | Local D1 state in the named volume | Room persistence |

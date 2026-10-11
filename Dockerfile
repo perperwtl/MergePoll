@@ -10,6 +10,8 @@ FROM node:24-bookworm-slim
 WORKDIR /app
 LABEL org.opencontainers.image.source="https://github.com/perperwtl/MergePoll" org.opencontainers.image.licenses="AGPL-3.0-only"
 ENV NODE_ENV=production WRANGLER_SEND_METRICS=false CLOUDFLARE_CF_FETCH_ENABLED=false WRANGLER_WRITE_LOGS=false
+# workerd verifies outbound TLS (e.g. the TypeSafe API) against the system CA store.
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/dist ./dist
 COPY --chown=node:node package.json wrangler.jsonc LICENSE THIRD_PARTY_NOTICES.md README.md ./

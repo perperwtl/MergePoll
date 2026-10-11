@@ -2,7 +2,7 @@ services:
   mergepoll:
     build: .
     ports:
-      - "127.0.0.1:${MERGEPOLL_PORT:-5173}:5173"
+      - "${MERGEPOLL_HOST:-127.0.0.1}:${MERGEPOLL_PORT:-5173}:5173"
     # Read credentials only from this deployer's file, not the invoking shell.
     env_file:
       - path: .env

@@ -1775,3 +1775,125 @@ textarea::placeholder {
     font-size: 40px;
   }
 }
+/* Mobile: keep the composer one tap away instead of below the whole queue */
+.ask-bar,
+.composer-close,
+.composer-scrim {
+  display: none;
+}
+@media (max-width: 760px) {
+  .ask-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    display: block;
+    padding: 10px 16px max(10px, env(safe-area-inset-bottom));
+    background: #f8f9f5f2;
+    border-top: 1px solid var(--line);
+    backdrop-filter: blur(8px);
+  }
+  .ask-bar button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 46px;
+    padding: 0 6px 0 16px;
+    border: 1px solid #dfe5d5;
+    border-radius: 999px;
+    background: #fff;
+    color: #8f9886;
+    font-size: 14px;
+    text-align: left;
+  }
+  .ask-bar button > span:first-child {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ask-bar button:disabled .ask-bar-icon {
+    background: #b9c2ae;
+  }
+  .ask-bar-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--green);
+    color: #fff;
+  }
+  /* Leave room so the bar never covers the last card */
+  .main-shell main {
+    padding-bottom: 96px;
+  }
+  .composer-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: #17291f80;
+    backdrop-filter: blur(3px);
+  }
+  .right-column .composer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 61;
+    max-height: 85vh;
+    overflow: auto;
+    margin: 0;
+    padding: 28px 20px max(20px, env(safe-area-inset-bottom));
+    border: 0;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -16px 60px #07190b40;
+    transform: translateY(105%);
+    visibility: hidden;
+    transition:
+      transform 0.25s ease,
+      visibility 0s linear 0.25s;
+  }
+  .right-column .composer.open {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.25s ease;
+  }
+  .right-column .composer::before {
+    content: "";
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    width: 38px;
+    height: 4px;
+    margin-left: -19px;
+    border-radius: 4px;
+    background: var(--line);
+  }
+  .composer-close {
+    display: flex;
+    position: absolute;
+    top: 16px;
+    right: 14px;
+    padding: 8px;
+    color: #7d8c70;
+  }
+  .composer textarea {
+    font-size: 16px; /* avoids iOS zoom on focus */
+  }
+  /* Feedback stays visible wherever the reader has scrolled */
+  .main-shell .toast {
+    position: fixed;
+    top: max(12px, env(safe-area-inset-top));
+    left: 16px;
+    right: 16px;
+    z-index: 70;
+    box-shadow: 0 8px 24px #17291f26;
+  }
+}
