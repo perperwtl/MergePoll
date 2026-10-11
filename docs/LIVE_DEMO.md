@@ -41,3 +41,6 @@ Set `PUBLIC_DEMO=true` in the hosted environment to enable browser sandboxes;
 normal Docker/Worker hosting retains the shared-room organizer-token workflow.
 The Sites checkout retains its `sites()` build integration, storage manifest and
 schema migrations. Keys are configured with the Sites runtime secret tools.
+
+The [hosted build overlay](../hosting/sites/README.md) includes its lockfile,
+retained build scripts and migration history so the served version can be rebuilt.
