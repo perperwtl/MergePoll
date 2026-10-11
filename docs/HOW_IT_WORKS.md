@@ -24,9 +24,10 @@ flowchart LR
     F --> G[Organizer inspects, splits or answers]
 ```
 
-The current model is `jev-1.13.0`, with TypeSafe's Noul primitive. Requests are
-batched in groups of up to 100 pair judgments. The implementation retries 429
-and 529 responses, validates that every score is a number between 0 and 1,
+The current model is `jev-1.13.0`, with TypeSafe's Noul primitive. The merge
+policy is sent once per request in `state`; each pair judgment carries only its
+two texts and points at that policy. Requests hold up to 250 pair judgments and
+up to 6 run concurrently. The implementation retries 429 and 529 responses, validates that every score is a number between 0 and 1,
 and retains existing questions if a pass fails.
 
 Clustering is greedy in question creation order. A new member must clear the

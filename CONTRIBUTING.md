@@ -27,7 +27,7 @@ fixtures or screenshots.
 
 ## Changing grouping instructions
 
-The Jev judgment and criteria in `lib/grouping.ts` decide what merges. Any change
+The merge policy (`MERGE_RULES`) and per-pair judgment in `lib/grouping.ts` decide what merges. Any change
 to them must be checked against the labelled pairs in
 `evals/grouping-pairs.json`:
 

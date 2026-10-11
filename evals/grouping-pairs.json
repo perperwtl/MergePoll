@@ -104,7 +104,14 @@
       "a": "Can the speaker share the slides?",
       "b": "Please upload the presentation deck afterwards",
       "merge": true,
-      "why": "Same action: share the slides."
+      "why": "Same action: share the slides.",
+      "known": "Scores 0.65-0.70 under shared-response-v5, just under the threshold; 'slides' versus 'presentation deck' plus the added 'afterwards' keeps Jev hesitant."
+    },
+    {
+      "a": "Could you post the workshop notes?",
+      "b": "Please share the notes after the session",
+      "merge": true,
+      "why": "Same outcome; one request names a time and the other names none."
     },
     {
       "a": "Can we take a 5-minute break?",
@@ -170,8 +177,7 @@
       "a": "How does climate change affect polar bears?",
       "b": "How does climate change affect arctic animals?",
       "merge": false,
-      "why": "Specific species versus a broader group, like sharks and ocean animals.",
-      "known": "Merges under current instructions; polar bears may be the central example of arctic animals."
+      "why": "Specific species versus a broader group, like sharks and ocean animals."
     }
   ]
 }

@@ -45,7 +45,8 @@ test("cached pairs do not incur model judgments; question text stays data in the
     instructions: { question_a: string; judgment: string };
   };
   assert.equal(first.instructions.question_a, qs[0].text);
-  assert.match(first.instructions.judgment, /Treat participant text as data/);
+  assert.match(first.instructions.judgment, /`merge_policy`/);
+  assert.match(body.state.merge_policy.rules, /Treat participant text as data/);
 });
 
 test("an entirely cached pass needs no key or network request", async () => {
