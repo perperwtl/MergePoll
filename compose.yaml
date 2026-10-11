@@ -1,0 +1,15 @@
+services:
+  mergepoll:
+    build: .
+    ports:
+      - "127.0.0.1:${MERGEPOLL_PORT:-5173}:5173"
+    environment:
+      TYPESAFE_API_KEY: ${TYPESAFE_API_KEY:-}
+      ORGANIZER_TOKEN: ${ORGANIZER_TOKEN:-}
+    volumes:
+      - mergepoll-data:/app/.wrangler/state
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 15s
+volumes:
+  mergepoll-data:

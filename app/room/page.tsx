@@ -45,6 +45,8 @@ type Room = {
   canTeach: boolean;
   connected: boolean;
   localDemo: boolean;
+  publicDemo?: boolean;
+  demoRunsRemaining?: number;
   revision: number;
   lastGroupedIds?: string[];
   noNewQuestions?: boolean;
@@ -382,7 +384,7 @@ export default function Home() {
                 Participant
               </button>
             </div>
-            {room.canTeach && !room.localDemo && (
+            {room.canTeach && !room.localDemo && !room.publicDemo && (
               <button
                 className="text-link"
                 onClick={() => organizerSession(true)}
@@ -394,6 +396,14 @@ export default function Home() {
           </div>
         </header>
         <main>
+          {room.publicDemo && (
+            <div className="notice" role="status">
+              Live experiment · Your own browser sandbox.{" "}
+              {room.demoRunsRemaining ?? 3} live grouping passes left · 12 open
+              questions · one minute between passes. Questions go to TypeSafe
+              when you group. Use synthetic examples.
+            </div>
+          )}
           {room.localDemo && (
             <div className="notice" role="status">
               Local sandbox · Organizer controls are shared on this computer.

@@ -1,3 +1,4 @@
+import { env } from "cloudflare:workers";
 import {
   ArrowRight,
   Layers3,
@@ -8,7 +9,10 @@ import {
   Activity,
 } from "lucide-react";
 import { SOURCE_URL } from "../lib/project";
+export const dynamic = "force-dynamic";
 export default function Introduction() {
+  const demo =
+    (env as unknown as { PUBLIC_DEMO?: string }).PUBLIC_DEMO === "true";
   return (
     <div className="intro">
       <nav className="intro-nav">
@@ -46,8 +50,9 @@ export default function Introduction() {
               <a href="#how">How it works ↓</a>
             </div>
             <small>
-              Working prototype · one shared room · participants join without an
-              account
+              {demo
+                ? "Live experiment · your own browser sandbox · no account or API key needed"
+                : "Working prototype · one shared room · participants join without an account"}
             </small>
           </div>
           <div className="merge-example">
@@ -154,9 +159,9 @@ export default function Introduction() {
             </p>
             <hr />
             <small>
-              Automatic cycles run while organizer view is open. There is one
-              room and a 30-open-question limit. Separate events, QR joining,
-              and large-event scaling are future steps.
+              {demo
+                ? "Each browser gets a separate sandbox with 12 open questions and three live grouping passes. Grouping is manual, with a one-minute cooldown and a shared daily budget. Use synthetic questions; text is sent to TypeSafe."
+                : "Automatic cycles run while organizer view is open. There is one room and a 30-open-question limit. Separate events, QR joining, and large-event scaling are future steps."}
             </small>
           </div>
         </section>
