@@ -11,8 +11,10 @@ import { organizerIdentity, isLocalDemo } from "../../../lib/organizer-auth";
 import {
   demoSession,
   demoGroupingError,
-  DEMO_MAX_QUESTIONS,
   DEMO_DAILY_RUNS,
+  DEMO_DAILY_PAIRS,
+  DEMO_MAX_RUNS,
+  questionLimitError,
 } from "../../../lib/demo-session";
 export const dynamic = "force-dynamic";
 type Room = {
@@ -119,7 +121,8 @@ function publicRoom(r: Room, viewer: string) {
     canTeach: owner === viewer,
     connected: !!bindings().TYPESAFE_API_KEY,
     publicDemo: bindings().PUBLIC_DEMO === "true",
-    demoRunsRemaining: Math.max(0, 3 - (r.demoRuns || 0)),
+    interval: bindings().PUBLIC_DEMO === "true" ? 0 : r.interval,
+    demoRunsRemaining: Math.max(0, DEMO_MAX_RUNS - (r.demoRuns || 0)),
     localDemo: isLocalDemo(new Request("http://localhost"), bindings()),
   };
 }
@@ -159,6 +162,7 @@ export async function POST(req: Request) {
     const teacher = [
       "group",
       "settings",
+      "start",
       "answer",
       "save",
       "restore",
@@ -197,6 +201,8 @@ export async function POST(req: Request) {
       if (!snapshot.published)
         return reply({ error: "Publish the room before grouping." }, 409);
       await change(who, (r) => {
+        if (r.revision !== snapshot.revision)
+          throw new Error("The room changed. Please group again.");
         if (r.lock && Date.now() - r.lock < 300000)
           throw new Error("A grouping pass is already running.");
         if (demo) {
@@ -228,6 +234,32 @@ export async function POST(req: Request) {
         if (!budget.meta.changes)
           throw new Error(
             "The demo's daily model budget is used up. Try tomorrow or run Docker with your own key.",
+          );
+      }
+      if (demo) {
+        let pairs = 0;
+        for (let i = 0; i < active.length; i++)
+          for (let j = i + 1; j < active.length; j++)
+            if (!(pairKey(active[i].id, active[j].id) in snapshot.scores))
+              pairs++;
+        const db = bindings().DB;
+        const day =
+          "demo-pairs-budget-" + new Date().toISOString().slice(0, 10);
+        await db
+          .prepare(
+            "INSERT OR IGNORE INTO rooms (id,data,version) VALUES (?, '{}', 0)",
+          )
+          .bind(day)
+          .run();
+        const budget = await db
+          .prepare(
+            "UPDATE rooms SET version=version+? WHERE id=? AND version+?<=?",
+          )
+          .bind(pairs, day, pairs, DEMO_DAILY_PAIRS)
+          .run();
+        if (!budget.meta.changes)
+          throw new Error(
+            "The demo's daily comparison budget is used up. Try tomorrow or use Docker.",
           );
       }
       const result = await evaluate(
@@ -270,13 +302,8 @@ export async function POST(req: Request) {
         const text = typeof b.text === "string" ? b.text.trim() : "";
         if (!text || text.length > 500)
           throw new Error("Please write a question of 1–500 characters.");
-        if (
-          r.questions.filter((q) => !q.saved).length >=
-          (demo ? DEMO_MAX_QUESTIONS : 30)
-        )
-          throw new Error(
-            `Question limit: mark some questions answered before adding more (${demo ? DEMO_MAX_QUESTIONS : 30} active).`,
-          );
+        const limitError = questionLimitError(r.questions, demo);
+        if (limitError) throw new Error(limitError);
         if (
           r.questions.some(
             (q) =>
@@ -319,7 +346,9 @@ export async function POST(req: Request) {
           for (let j = i + 1; j < members.length; j++)
             r.blocked.push(pairKey(members[i].id, members[j].id));
         members.forEach((q) => (q.group = q.id));
-      } else if (b.action === "settings") {
+      } else if (b.action === "settings" || b.action === "start") {
+        if (r.lock && Date.now() - r.lock < 300000)
+          throw new Error("Wait for the current grouping pass to finish.");
         if (
           typeof b.title !== "string" ||
           !b.title.trim() ||
@@ -335,6 +364,16 @@ export async function POST(req: Request) {
           b.threshold > 0.99
         )
           throw new Error("Invalid grouping settings.");
+        if (demo && b.interval !== 0)
+          throw new Error("Hosted grouping is manual only.");
+        if (b.action === "start") {
+          r.questions = [];
+          r.scores = {};
+          r.blocked = [];
+          r.metrics = null;
+          r.lastGroupedIds = [];
+          r.lock = 0;
+        }
         if (r.title !== b.title.trim() || r.description !== b.description) {
           r.scores = {};
           r.lastGroupedIds = [];

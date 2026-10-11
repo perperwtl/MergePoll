@@ -1,6 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { demoSession, demoGroupingError } from "../lib/demo-session.ts";
+import {
+  demoSession,
+  demoGroupingError,
+  questionLimitError,
+} from "../lib/demo-session.ts";
 
 test("demo access is opt-in and new visitors receive separate opaque rooms", () => {
   const req = new Request("https://demo.example/api/room");
@@ -25,11 +29,23 @@ test("demo access is opt-in and new visitors receive separate opaque rooms", () 
 });
 
 test("demo quotas and cooldown do not reset with question resets", () => {
-  assert.equal(demoGroupingError({ demoRuns: 2 }, 100_000), null);
-  assert.match(demoGroupingError({ demoRuns: 3 }, 100_000)!, /three/);
+  assert.equal(demoGroupingError({ demoRuns: 9 }, 100_000), null);
+  assert.match(demoGroupingError({ demoRuns: 10 }, 100_000)!, /ten/);
   assert.match(
     demoGroupingError({ demoLastAttempt: 90_000 }, 100_000)!,
     /one minute/,
   );
   assert.equal(demoGroupingError({ demoLastAttempt: 40_000 }, 100_000), null);
+});
+
+test("hosted task cap includes answered questions; Docker has no count quota", () => {
+  assert.equal(questionLimitError(Array(99).fill({ saved: true }), true), null);
+  assert.match(
+    questionLimitError(Array(100).fill({ saved: true }), true)!,
+    /100/,
+  );
+  assert.equal(
+    questionLimitError(Array(1000).fill({ saved: false }), false),
+    null,
+  );
 });

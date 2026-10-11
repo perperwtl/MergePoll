@@ -22,16 +22,23 @@ export function demoSession(req: Request, enabled: boolean, create = false) {
     cookie: `${DEMO_COOKIE}=${id}; Path=/; HttpOnly; SameSite=Strict; Max-Age=43200${new URL(req.url).protocol === "https:" ? "; Secure" : ""}`,
   };
 }
-export const DEMO_MAX_QUESTIONS = 12;
-export const DEMO_MAX_RUNS = 3;
+export const DEMO_MAX_QUESTIONS = 100;
+export const DEMO_MAX_RUNS = 10;
 export const DEMO_DAILY_RUNS = 100;
 export function demoGroupingError(
   room: { demoRuns?: number; demoLastAttempt?: number },
   now = Date.now(),
 ) {
   if ((room.demoRuns || 0) >= DEMO_MAX_RUNS)
-    return "Demo limit: three live grouping passes per browser session. Use Docker for further experiments.";
+    return "Demo limit: ten live grouping passes per browser session. Use Docker for further experiments.";
   if (now - (room.demoLastAttempt || 0) < 60_000)
     return "Please wait one minute between live demo grouping passes.";
   return null;
+}
+
+export const DEMO_DAILY_PAIRS = 20_000;
+export function questionLimitError(questions: unknown[], demo: boolean) {
+  return demo && questions.length >= DEMO_MAX_QUESTIONS
+    ? "Task limit: 100 questions including answered questions. Start a new task or use Docker."
+    : null;
 }

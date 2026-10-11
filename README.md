@@ -89,6 +89,8 @@ The default port is accessible only on your computer. See
 
 ## Live experiment — no setup
 
+Try [a blank task](https://mergepoll.newreed128.chatgpt.site/new) or the climate walkthrough.
+
 **[Open the live MergePoll demo](https://mergepoll.newreed128.chatgpt.site/)**
 — no self-hosting, account or personal API key required.
 
@@ -96,10 +98,11 @@ The default port is accessible only on your computer. See
 2. Click **Group now**, inspect originals and open **Grouping lab**.
 3. Switch to Participant to post or vote, then Organizer to split or mark answered.
 
-The server uses a dedicated demo key. Each browser session gets **three live
-grouping passes**, with a **one-minute cooldown** and **12 open questions**.
-There is also a shared **100-pass daily model budget (UTC)**. Resetting questions
-does not reset the allowance. Automatic grouping starts disabled. A different
+The server uses a dedicated demo key. Each browser session gets **ten live
+grouping passes**, with a **one-minute cooldown** and **100 questions per task**.
+There are also shared daily budgets of **100 passes and 20,000 new pair
+comparisons (UTC)**. Resetting questions or creating a new task does not reset
+the allowance. Automatic grouping starts disabled. A different
 browser gets a different sandbox, so this demo is for individual exploration;
 use Docker for a shared room on your own machine.
 
@@ -132,7 +135,7 @@ The lab's tiny sample is a sanity check, **not a general accuracy benchmark**.
 
 This is an experimental prototype, with:
 
-- **One shared room** and at most **30 open questions**.
+- **One shared room**, with no application question-count or grouping-attempt quota in Docker. Each post is limited to 500 characters.
 - Automatic grouping while an authenticated Organizer view is open; no background
   server scheduler.
 - Supporters deduplicated by browser token, not verified people.

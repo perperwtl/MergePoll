@@ -106,10 +106,12 @@ test("long posts are split across requests that stay inside the model context", 
     text: String(i).repeat(250).slice(0, 500),
   }));
   const sizes: number[] = [];
+  const bytes: number[] = [];
   const realFetch = globalThis.fetch;
   globalThis.fetch = (async (_url: string, init: RequestInit) => {
     const questions = JSON.parse(String(init.body)).questions;
     sizes.push(Object.keys(questions).length);
+    bytes.push(new TextEncoder().encode(String(init.body)).length);
     const answers = Object.fromEntries(
       Object.keys(questions).map((id) => [id, { type: "noul", noul: 0.1 }]),
     );
@@ -122,11 +124,46 @@ test("long posts are split across requests that stay inside the model context", 
   } finally {
     globalThis.fetch = realFetch;
   }
-  assert.equal(sizes.length, 6);
+  assert.ok(sizes.length >= 6);
+  assert.ok(bytes.every((n) => n < 49_000));
   assert.equal(
     sizes.reduce((a, b) => a + b),
     435,
   );
-  // ~410 estimated tokens per long pair: 73 pairs stays far below 64k.
+  // Conservative UTF-8 sizing leaves room for the shared policy and JSON.
   assert.ok(Math.max(...sizes) <= 73);
+});
+
+test("100 Chinese questions fit bounded requests and retain every pair", async () => {
+  const qs = Array.from({ length: 100 }, (_, i) => ({
+    ...seed()[0],
+    id: "zh-" + i,
+    text: "气候变化".repeat(125),
+  }));
+  const realFetch = globalThis.fetch;
+  const bytes: number[] = [];
+  globalThis.fetch = (async (_url: string, init: RequestInit) => {
+    bytes.push(new TextEncoder().encode(String(init.body)).length);
+    const { questions } = JSON.parse(String(init.body));
+    return Response.json({
+      model: "test",
+      answers: Object.fromEntries(
+        Object.keys(questions).map((id) => [id, { noul: 0.1 }]),
+      ),
+    });
+  }) as typeof fetch;
+  try {
+    const result = await evaluate(
+      "fake",
+      "中文活动",
+      "背景".repeat(1000),
+      qs,
+      {},
+    );
+    assert.equal(result.pairs, 4950);
+    assert.equal(Object.keys(result.scores).length, 4950);
+    assert.ok(bytes.every((n) => n < 49_000));
+  } finally {
+    globalThis.fetch = realFetch;
+  }
 });

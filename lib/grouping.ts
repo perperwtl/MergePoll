@@ -127,19 +127,24 @@ export async function evaluate(
   const usage = { input_tokens: 0, output_tokens: 0 };
   let model = "jev-1.13.0";
   // Spread pairs evenly over up to 6 concurrent requests (the Workers limit on
-  // simultaneous outbound connections), keeping each one's estimated input well
+  // simultaneous outbound connections), keeping each one's conservative UTF-8 byte bound well
   // inside Jev's 64k context even when posts are long.
   const entries = Object.entries(body.questions);
   const perRequest = Math.ceil(entries.length / 6);
   const chunks: (typeof entries)[] = [[]];
+  const encoder = new TextEncoder();
+  const stateBytes = encoder.encode(JSON.stringify(body.state)).length;
   let budget = 0;
   for (const entry of entries) {
-    const { question_a, question_b } = (entry[1] as any).instructions;
-    const tokens = (question_a.length + question_b.length) / 3 + 80;
+    const tokens = encoder.encode(JSON.stringify(entry)).length;
+    if (stateBytes + tokens > 30_000)
+      throw new Error(
+        "A comparison is too long for Jev. Shorten the question or event context.",
+      );
     let chunk = chunks[chunks.length - 1];
     if (
       chunk.length &&
-      (chunk.length >= perRequest || budget + tokens > 40000)
+      (chunk.length >= perRequest || stateBytes + budget + tokens > 48_000)
     ) {
       chunks.push((chunk = []));
       budget = 0;
