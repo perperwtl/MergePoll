@@ -16,3 +16,5 @@ dist/
 coverage/
 playwright-report/
 test-results/
+# Separate Sites source checkout; hosted app changes also live in app/ and lib/.
+/sites/

@@ -26,3 +26,25 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: docker compose config --quiet
+      - run: docker compose up --build -d --wait --wait-timeout 180
+      - run: node docker/smoke.mjs seed
+      - run: docker compose restart && docker compose up -d --wait --wait-timeout 90
+      - run: node docker/smoke.mjs persist
+      - name: Check runtime secrets and organizer isolation without live model calls
+        run: docker compose up -d --wait --wait-timeout 90 && node docker/smoke.mjs auth
+        env:
+          TYPESAFE_API_KEY: synthetic-docker-test-key
+          ORGANIZER_TOKEN: synthetic-docker-test-token
+      - if: failure()
+        run: docker compose logs --no-color
+      - if: always()
+        run: docker compose down -v

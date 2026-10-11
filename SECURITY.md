@@ -29,3 +29,18 @@ token can circumvent that mechanism. Do not use it for elections or binding vote
 
 The source-sharing license requires code and safe configuration examples, never
 secrets or user data. `.dev.vars`, environment files and local D1 state are ignored.
+
+## Public experiment
+
+The hosted experiment opts into `PUBLIC_DEMO=true`, which gives each browser
+an isolated organizer sandbox via an opaque HttpOnly cookie. The normal shared
+room stays behind organizer authentication on deployments without that flag.
+The demo uses its own server key, a 12-question cap, three model attempts per
+session, a one-minute cooldown and an atomic 100-attempt daily counter in D1.
+Clearing cookies bypasses the per-session allowance but cannot bypass the global
+counter. This bounds requests rather than guaranteeing a monetary spending cap.
+The demo database has no automatic expiry cleanup. Use synthetic questions only.
+
+Docker publishes its port on host loopback by default, persists D1 in a named
+volume and excludes secrets from the image build context. Runtime secrets live
+inside the container; hosts with Docker access can read them.

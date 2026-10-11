@@ -26,7 +26,9 @@ Use synthetic questions. Explain that this is a one-room prototype with a
 > for free noncommercial and specified institutional use, with source sharing
 > for distributed and hosted modifications. Other commercial use needs permission.
 >
-> Try it locally: https://github.com/perperwtl/MergePoll
+> Try the live experiment: https://course-pulse-semantic.newreed128.chatgpt.site/
+>
+> Source and Docker setup: https://github.com/perperwtl/MergePoll
 >
 > I'm looking for organizers of small workshops, lectures and community events
 > to test it—and for question pairs that should merge or stay separate.
@@ -40,7 +42,8 @@ sandbox helps. Consider Product Hunt after successful pilots and polished onboar
 
 The [Show HN guidelines](https://news.ycombinator.com/showhn.html) favor something
 people can try, ideally without signup barriers. Do not ask for coordinated votes.
-The original restricted Sites deployment is not an account-free public sandbox.
+The Sites experiment is public and requires no account or personal API key. Each
+browser has its own sandbox with limited model usage; link to [demo details](LIVE_DEMO.md).
 
 ## Pilot feedback
 
@@ -58,3 +61,6 @@ contribution/license guidance were informed by [Dub](https://github.com/dubinc/d
 and [Formbricks](https://github.com/formbricks/formbricks). Their product copy,
 assets, claims and license terms were not copied. Popularity and their current
 licenses do not establish suitability for MergePoll.
+
+Docker-first setup and a prominent hosted experiment link also follow the clear
+[CVAT onboarding pattern](https://github.com/cvat-ai/cvat#getting-started).

@@ -8,6 +8,12 @@ import {
 } from "../../../lib/grouping";
 import { MERGE_POLICY, upgradeMergePolicy } from "../../../lib/merge-policy";
 import { organizerIdentity, isLocalDemo } from "../../../lib/organizer-auth";
+import {
+  demoSession,
+  demoGroupingError,
+  DEMO_MAX_QUESTIONS,
+  DEMO_DAILY_RUNS,
+} from "../../../lib/demo-session";
 export const dynamic = "force-dynamic";
 type Room = {
   title: string;
@@ -25,6 +31,8 @@ type Room = {
   revision: number;
   lastGroupedIds?: string[];
   mergePolicy?: string;
+  demoRuns?: number;
+  demoLastAttempt?: number;
 };
 const bindings = () =>
   env as unknown as {
@@ -32,16 +40,17 @@ const bindings = () =>
     TYPESAFE_API_KEY?: string;
     ORGANIZER_TOKEN?: string;
     LOCAL_DEMO?: string;
+    PUBLIC_DEMO?: string;
   };
 const reply = (data: any, status = 200) =>
   Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
-function initial(): Room {
+function initial(owner: string): Room {
   return {
     title: "Climate Change 101",
     description:
       "An introduction to the climate system, greenhouse gases, evidence of human-caused warming, sea-level rise, and practical climate action.",
     published: true,
-    interval: 120,
+    interval: bindings().PUBLIC_DEMO === "true" ? 0 : 120,
     threshold: 0.7,
     questions: seed(),
     scores: {},
@@ -49,21 +58,29 @@ function initial(): Room {
     lastRun: Date.now(),
     lock: 0,
     metrics: null,
-    owner: "organizer",
+    owner,
     revision: 0,
     mergePolicy: MERGE_POLICY,
   };
+}
+function roomId(owner: string) {
+  return bindings().PUBLIC_DEMO === "true" ? owner : "demo";
 }
 async function read(owner: string) {
   const db = bindings().DB;
   await db
     .prepare("INSERT OR IGNORE INTO rooms (id,data,version) VALUES (?,?,0)")
-    .bind("demo", JSON.stringify(initial()))
+    .bind(
+      roomId(owner),
+      JSON.stringify(
+        initial(bindings().PUBLIC_DEMO === "true" ? owner : "organizer"),
+      ),
+    )
     .run();
   for (let i = 0; i < 8; i++) {
     const row = await db
       .prepare("SELECT data,version FROM rooms WHERE id=?")
-      .bind("demo")
+      .bind(roomId(owner))
       .first<{ data: string; version: number }>();
     if (!row) throw new Error("Room not ready");
     const room = JSON.parse(row.data) as Room;
@@ -73,7 +90,7 @@ async function read(owner: string) {
       .prepare(
         "UPDATE rooms SET data=?,version=version+1 WHERE id=? AND version=?",
       )
-      .bind(JSON.stringify(room), "demo", row.version)
+      .bind(JSON.stringify(room), roomId(owner), row.version)
       .run();
     if (result.meta.changes) return { room, version: row.version + 1 };
   }
@@ -88,7 +105,7 @@ async function change(owner: string, mutate: (r: Room) => void) {
       .DB.prepare(
         "UPDATE rooms SET data=?,version=version+1 WHERE id=? AND version=?",
       )
-      .bind(JSON.stringify(room), "demo", version)
+      .bind(JSON.stringify(room), roomId(owner), version)
       .run();
     if (r.meta.changes) return room;
   }
@@ -101,14 +118,19 @@ function publicRoom(r: Room, viewer: string) {
     ...data,
     canTeach: owner === viewer,
     connected: !!bindings().TYPESAFE_API_KEY,
+    publicDemo: bindings().PUBLIC_DEMO === "true",
+    demoRunsRemaining: Math.max(0, 3 - (r.demoRuns || 0)),
     localDemo: isLocalDemo(new Request("http://localhost"), bindings()),
   };
 }
 export async function GET(req: Request) {
   try {
-    const who = await organizerIdentity(req, bindings());
+    const session = demoSession(req, bindings().PUBLIC_DEMO === "true", true);
+    const who = session?.id ?? (await organizerIdentity(req, bindings()));
     const { room } = await read(who);
-    return reply(publicRoom(room, who));
+    const response = reply(publicRoom(room, who));
+    if (session?.cookie) response.headers.set("Set-Cookie", session.cookie);
+    return response;
   } catch {
     return reply(
       { error: "The event database is not ready. Please refresh shortly." },
@@ -118,7 +140,14 @@ export async function GET(req: Request) {
 }
 export async function POST(req: Request) {
   let ownsLock = false;
-  const who = await organizerIdentity(req, bindings());
+  const demo = bindings().PUBLIC_DEMO === "true";
+  const session = demoSession(req, demo);
+  if (demo && !session)
+    return reply(
+      { error: "Open the demo room first to start your sandbox." },
+      401,
+    );
+  const who = session?.id ?? (await organizerIdentity(req, bindings()));
   try {
     if (
       req.headers.get("origin") &&
@@ -163,9 +192,37 @@ export async function POST(req: Request) {
       await change(who, (r) => {
         if (r.lock && Date.now() - r.lock < 300000)
           throw new Error("A grouping pass is already running.");
+        if (demo) {
+          const error = demoGroupingError(r);
+          if (error) throw new Error(error);
+          r.demoRuns = (r.demoRuns || 0) + 1;
+          r.demoLastAttempt = Date.now();
+        }
         r.lock = Date.now();
       });
       ownsLock = true;
+      if (demo) {
+        // Use a separate counter row in the existing schema. Atomic increment
+        // caps total upstream requests even when visitors clear their cookies.
+        const day = "demo-budget-" + new Date().toISOString().slice(0, 10);
+        const db = bindings().DB;
+        await db
+          .prepare(
+            "INSERT OR IGNORE INTO rooms (id,data,version) VALUES (?, '{}', 0)",
+          )
+          .bind(day)
+          .run();
+        const budget = await db
+          .prepare(
+            "UPDATE rooms SET version=version+1 WHERE id=? AND version<?",
+          )
+          .bind(day, DEMO_DAILY_RUNS)
+          .run();
+        if (!budget.meta.changes)
+          throw new Error(
+            "The demo's daily model budget is used up. Try tomorrow or run Docker with your own key.",
+          );
+      }
       const result = await evaluate(
         bindings().TYPESAFE_API_KEY!,
         snapshot.title,
@@ -206,9 +263,12 @@ export async function POST(req: Request) {
         const text = typeof b.text === "string" ? b.text.trim() : "";
         if (!text || text.length > 500)
           throw new Error("Please write a question of 1–500 characters.");
-        if (r.questions.filter((q) => !q.saved).length >= 30)
+        if (
+          r.questions.filter((q) => !q.saved).length >=
+          (demo ? DEMO_MAX_QUESTIONS : 30)
+        )
           throw new Error(
-            "Demo limit: mark some questions answered before adding more (30 active).",
+            `Question limit: mark some questions answered before adding more (${demo ? DEMO_MAX_QUESTIONS : 30} active).`,
           );
         if (
           r.questions.some(

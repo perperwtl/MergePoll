@@ -15,7 +15,8 @@
 </p>
 
 <p align="center">
-  <a href="#quick-start">Run locally</a> ·
+  <a href="https://course-pulse-semantic.newreed128.chatgpt.site/">Live demo</a> ·
+  <a href="#quick-start">Run with Docker</a> ·
   <a href="#try-the-experiment">Try the experiment</a> ·
   <a href="docs/SELF_HOSTING.md">Self-host</a> ·
   <a href="docs/ROADMAP.md">Roadmap</a> ·
@@ -61,33 +62,46 @@ small event Q&A sessions. Concert requests are an experimental use case.
 
 ## Quick start
 
-You need **Node.js 22.13+** (Node 24 is pinned in `.nvmrc`) and npm.
-No Cloudflare account is needed to run locally.
+You need **Docker Desktop** (Windows/macOS) or **Docker Engine with Compose v2+**
+(Linux), plus Git. No host Node.js, npm, database setup or Cloudflare account is needed.
 
 ```bash
 git clone https://github.com/perperwtl/MergePoll.git
 cd MergePoll
-npm ci
-cp .dev.vars.example .dev.vars
-npm run db:migrate
-npm run dev
+docker compose up --build -d
 ```
 
-Open **http://127.0.0.1:5173**. The first room request creates the Climate Change
-101 demo with ten sample questions. On localhost, organizer controls are shared
-when no organizer token is configured.
+Open **http://localhost:5173**. Docker installs dependencies, builds the app and
+applies local database migrations automatically. The first room request creates
+ten Climate Change 101 questions. Data stays in a named volume across restarts.
 
-**To enable real grouping:** edit the ignored `.dev.vars` file and add your own
-`TYPESAFE_API_KEY`. Restart the dev server. Browsing, posting, voting and answering
-work without a key; **Group now** requires it. No key or API credits are included
-with this repository. Grouping sends question text and event context to TypeSafe.
+**To enable real grouping:** copy `.env.example` to `.env`, add your own
+`TYPESAFE_API_KEY`, then run `docker compose up -d` again. Browsing, posting,
+voting and answering work without a key. No key or API credits are included
+in the image. Questions and event context go to TypeSafe when you group.
 
-**To test organizer login:** also set a long random `ORGANIZER_TOKEN` in `.dev.vars`,
-restart, select **Organizer**, and enter that token. Participant access remains
-account-free. Never share the organizer token in a room link.
+Optionally set a long random `ORGANIZER_TOKEN` in `.env` to test organizer login.
+The default port is accessible only on your computer. See
+[Docker setup, backups and troubleshooting](docs/SELF_HOSTING.md).
 
-See [self-hosting and troubleshooting](docs/SELF_HOSTING.md) for deployment,
-configuration and common setup errors.
+## Live experiment — no setup
+
+**[Open the live MergePoll demo](https://course-pulse-semantic.newreed128.chatgpt.site/)**
+— no self-hosting, account or personal API key required.
+
+1. Enter the Climate Change 101 demo; your browser gets its own sandbox.
+2. Click **Group now**, inspect originals and open **Grouping lab**.
+3. Switch to Participant to post or vote, then Organizer to split or mark answered.
+
+The server uses a dedicated demo key. Each browser session gets **three live
+grouping passes**, with a **one-minute cooldown** and **12 open questions**.
+There is also a shared **100-pass daily model budget (UTC)**. Resetting questions
+does not reset the allowance. Automatic grouping starts disabled. A different
+browser gets a different sandbox, so this demo is for individual exploration;
+use Docker or a deployed Worker for a shared audience room.
+
+Use synthetic questions: grouping sends text to TypeSafe. Scores vary and this
+small experiment is not a general accuracy benchmark. See [demo details](docs/LIVE_DEMO.md).
 
 ## Try the experiment
 
@@ -125,10 +139,6 @@ This is an experimental prototype, with:
 - Questions anonymous in the displayed queue, not guaranteed anonymous to the
   host or model provider. See [SECURITY.md](SECURITY.md).
 
-The [earlier hosted prototype](https://course-pulse-semantic.newreed128.chatgpt.site/)
-has restricted access and uses a separate deployment. **Use the local quick start
-to try this repository's version.** It does not unlock that hosted prototype.
-
 ## Development
 
 ```bash
@@ -136,6 +146,8 @@ npm run typecheck
 npm test
 npm run build
 ```
+
+For source development without Docker, see [the developer setup](docs/SELF_HOSTING.md#source-development-optional).
 
 Tests use synthetic data and do not require a key or call TypeSafe. CI runs these
 checks on pushes and pull requests.
@@ -150,6 +162,8 @@ checks on pushes and pull requests.
 | `lib/merge-policy.ts` | Policy migration |
 | `lib/organizer-auth.ts` | Signed organizer sessions |
 | `migrations/` | D1 schema |
+| `Dockerfile`, `compose.yaml`, `docker/` | Container build, persistent storage and automatic setup |
+| `lib/demo-session.ts` | Visitor sandbox sessions and hosted demo limits |
 
 The stack is React, TypeScript, Tailwind CSS, Vinext/Vite and Cloudflare Workers
 with D1. See [how grouping works](docs/HOW_IT_WORKS.md).

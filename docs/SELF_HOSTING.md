@@ -1,28 +1,95 @@
 # Run MergePoll on your own machine or Worker
 
-## Local development
+## Docker quick start
 
-Use the [README quick start](../README.md#quick-start). `npm run db:migrate`
-applies SQL migrations to a local Cloudflare D1 emulator; no account is needed.
-The app creates ten demo questions on its first room request. Data persists in
-the ignored `.wrangler/` directory across restarts.
+Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) on Windows
+or macOS, or Docker Engine plus Compose v2+ on Linux. Start Docker before running:
 
-The dev server is bound to `127.0.0.1`. Without an organizer token, local browser
-windows share organizer controls. For an access-separated test, configure
-`ORGANIZER_TOKEN` in `.dev.vars`. Signed sessions expire after 12 hours, and
-rotating the token invalidates previously issued sessions.
+```bash
+git clone https://github.com/perperwtl/MergePoll.git
+cd MergePoll
+docker compose up --build -d
+```
 
-| Setting | Where | Purpose |
-| --- | --- | --- |
-| `TYPESAFE_API_KEY` | `.dev.vars` locally; Worker secret when deployed | Real Jev grouping |
-| `ORGANIZER_TOKEN` | `.dev.vars` locally; Worker secret when deployed | Private organizer login |
-| `LOCAL_DEMO` | Vite dev configuration / Wrangler vars | Local sandbox flag; keep `false` when deployed |
-| `DB` | D1 binding in `wrangler.jsonc` | Room persistence |
-| `SOURCE_URL` | `lib/project.ts` | Source link for the version you host |
+Open **http://localhost:5173**. The container handles Node.js, locked npm
+dependencies, the app build and database migrations. It runs the built Worker
+with Wrangler's local D1 emulator; no Cloudflare account is needed. This is a
+single-machine prototype, not a production replacement for Cloudflare Workers.
 
-Do not prefix keys or the organizer token with `NEXT_PUBLIC_`. The browser
-never needs these environment values. After editing `.dev.vars`, restart the
-server. The server must load an actual TypeSafe key before grouping can run.
+The port is bound to loopback on the host. Inside the container the server listens
+on all interfaces, which allows Docker's port forwarding. Without an organizer
+token, localhost organizer controls are shared. For real remote events, use the
+Worker deployment below with an organizer token.
+
+### Optional grouping and organizer login
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` in your editor. Set your own `TYPESAFE_API_KEY` for real grouping and,
+optionally, a long random `ORGANIZER_TOKEN` for organizer login. Generate a token
+with `openssl rand -hex 32` if available. Then apply changes:
+
+```bash
+docker compose up -d
+```
+
+Docker Compose recreates the container when the environment changes. Merely
+restarting an existing container does not reload `.env`. Secrets are supplied
+at runtime; `.env`, `.dev.vars`, local database state and Sites files are
+excluded from the image build context. Never use a `NEXT_PUBLIC_` prefix for secrets.
+
+Set `MERGEPOLL_PORT=8080` in `.env` to use http://localhost:8080 instead.
+
+### Stop, update and back up
+
+```bash
+docker compose logs -f mergepoll
+docker compose ps
+docker compose down
+```
+
+`down` preserves the `mergepoll-data` volume. After pulling source updates, run
+`docker compose up --build -d` again; migrations run automatically on startup.
+**`docker compose down -v` permanently deletes the local room database.**
+
+For a consistent backup, stop the service, copy its state, then start it again:
+
+```bash
+docker compose stop mergepoll
+docker compose cp mergepoll:/app/.wrangler/state ./mergepoll-backup
+docker compose start mergepoll
+```
+
+To restore, stop the service and copy the saved directory contents back with
+`docker compose cp ./mergepoll-backup/. mergepoll:/app/.wrangler/state`, then start.
+Keep the backup private; it contains questions and browser identities.
+
+## Source development (optional)
+
+Only contributors need host Node.js **22.13+** (Node 24 in `.nvmrc`) and npm:
+
+```bash
+npm ci
+cp .dev.vars.example .dev.vars
+npm run db:migrate
+npm run dev
+```
+
+Open http://localhost:5173. Set secrets in `.dev.vars` for this workflow and
+restart after edits. Local state persists in `.wrangler/`. Signed organizer
+sessions expire after 12 hours; rotating the token invalidates them.
+
+| Setting | Docker | Source / Worker | Purpose |
+| --- | --- | --- | --- |
+| `TYPESAFE_API_KEY` | `.env` | `.dev.vars` / Worker secret | Real Jev grouping |
+| `ORGANIZER_TOKEN` | `.env` | `.dev.vars` / Worker secret | Private organizer login |
+| `MERGEPOLL_PORT` | `.env`, default 5173 | Vite/Wrangler port argument | Host port |
+| `LOCAL_DEMO` | Container sets `true` | Dev sets `true`; keep `false` on Worker | Local sandbox only |
+| `PUBLIC_DEMO` | Container forces `false` | Optional hosted demo variable | Separate visitor sandboxes; see [live demo](LIVE_DEMO.md) |
+| `DB` | Named volume with local D1 | D1 binding | Room persistence |
+| `SOURCE_URL` | `lib/project.ts` | `lib/project.ts` | Source for hosted version |
 
 ## Cloudflare Workers deployment
 
@@ -86,8 +153,11 @@ and a communicated retention policy. See [SECURITY.md](../SECURITY.md).
 
 | Symptom | Check |
 | --- | --- |
-| Database not ready / `no such table: rooms` | Run `npm run db:migrate`; for a Worker use the remote migration command |
-| “A server-side TypeSafe key is required” | Set `TYPESAFE_API_KEY` in `.dev.vars` or the Worker secret, then restart locally |
+| Docker cannot connect to daemon | Start Docker Desktop or the Docker Engine service |
+| Port already in use | Set a different `MERGEPOLL_PORT` in `.env`, then run `docker compose up -d` |
+| Container unhealthy | Inspect `docker compose logs mergepoll`; check migrations and available disk/memory |
+| Database not ready / `no such table: rooms` | Restart the container to apply migrations, or run `npm run db:migrate` for source development; for a Worker use the remote migration command |
+| “A server-side TypeSafe key is required” | Set `TYPESAFE_API_KEY` in `.env` and recreate the container; use `.dev.vars` for development or a Worker secret |
 | Organizer controls disabled | Sign in with the organizer token; local automatic access requires no token and the dev server |
 | Participant link opens the wrong computer | `127.0.0.1` only refers to the same machine; deploy before sharing with remote attendees |
 | “No new questions” | Expected: the model is skipped when no new active question needs processing |

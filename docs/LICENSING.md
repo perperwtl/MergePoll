@@ -57,3 +57,26 @@ Do not assume that opening an issue or sending a request grants permission.
 The public copyright notice uses the maintainer's GitHub handle **perperwtl**.
 It does not identify or imply sponsorship by a university. Contributors retain
 copyright in their contributions; see the [contribution agreement](../CLA.md).
+
+## Comparison with CVAT Community
+
+Checked 11 October 2026 against [CVAT's repository license](https://github.com/cvat-ai/cvat/blob/develop/LICENSE)
+and [README](https://github.com/cvat-ai/cvat#license). The core is MIT; some
+third-party dependencies and model assets have separate terms.
+
+| Permission / obligation | MergePoll NC-SA 1.0 | CVAT Community MIT |
+| --- | --- | --- |
+| Personal and specified institutional use | Free | Free |
+| Business use, commercial events, selling hosting | Written permission required outside institutional exception | Allowed |
+| Distributed modifications | Matching complete source; same license | Preserve copyright and license notices; source need not be disclosed |
+| Hosted modifications | Offer users matching complete source; same license | No source-sharing obligation from MIT |
+| Proprietary forks | Restricted by permitted purposes and source-sharing terms | Allowed with notices |
+| Standard OSI open-source license | No; custom source-available license | Yes |
+
+**Assessment:** MergePoll is substantially more restrictive. It can discourage
+business pilots, paid event organizers and contributors who prefer a standard
+license. It fits a deliberate goal of reserving commercial licensing and
+requiring shared improvements. If broad adoption like CVAT is the priority,
+MIT would remove both barriers; it also allows competitors to keep their forks
+private. This review does not change the project's license. Any relicensing
+must respect contributor rights and the contribution agreements already granted.
