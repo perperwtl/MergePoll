@@ -6,8 +6,8 @@ export const metadata: Metadata = {
   description:
     "Ask freely. Find your shared questions. A live event Q&A and requests powered by semantic understanding.",
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
+    icon: "/mergepoll-icon.svg",
+    shortcut: "/mergepoll-icon.svg",
   },
 };
 

@@ -40,7 +40,7 @@ It preserves original wording and gives the organizer control over mistakes.
 These are intended behaviors, not guaranteed predictions. Model decisions can
 be wrong; inspect and split groups when needed.
 
-![MergePoll introduction](docs/assets/introduction.png)
+![MergePoll introduction](docs/assets/introduction.jpg)
 
 ## What you can do today
 
@@ -116,9 +116,9 @@ small experiment is not a general accuracy benchmark. See [demo details](docs/LI
 **Reset test questions** replaces the room's questions, votes, answered history
 and grouping history with the original ten examples; it asks for confirmation.
 
-![A merged pair with original wording available](docs/assets/shared-answer.png)
+![A merged pair with original wording available](docs/assets/shared-answer.jpg)
 
-The screenshot above is from the earlier hosted prototype; exact scores and
+The screenshot above is from the live hosted demo; exact scores and
 grouping results vary with input and model behavior.
 
 The seed set has four paraphrase pairs and two other questions. Its labels test
