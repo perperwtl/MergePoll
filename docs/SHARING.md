@@ -22,9 +22,9 @@ Use synthetic questions. Explain that this is a one-room prototype with a
 
 > I built MergePoll to make live audience Q&A easier to manage. It judges whether
 > one concise response can answer several questions, keeps their original wording,
-> and lets the organizer correct merges. The experimental source is available
-> for free noncommercial and specified institutional use, with source sharing
-> for distributed and hosted modifications. Other commercial use needs permission.
+> and lets the organizer correct merges. The project is open source under
+> AGPL-3.0-only, including commercial use, with source-sharing obligations for
+> distributed covered modifications and modified versions offered over a network.
 >
 > Try the live experiment: https://course-pulse-semantic.newreed128.chatgpt.site/
 >

@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="https://github.com/perperwtl/MergePoll/actions/workflows/ci.yml"><img src="https://github.com/perperwtl/MergePoll/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-NC%20%2B%20share--alike-425d39" alt="Custom noncommercial share-alike license" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-425d39" alt="AGPL-3.0 license" /></a>
   <img src="https://img.shields.io/badge/status-experimental-b57548" alt="Experimental prototype" />
   <img src="https://img.shields.io/badge/TypeScript-typed-3178c6" alt="TypeScript" />
 </p>
@@ -181,15 +181,14 @@ pitch, demo walkthrough and suggested pilot questions.
 
 ## License
 
-**Free noncommercial and specified institutional use. Share source for distributed
-copies and hosted modifications. Other commercial use needs written permission.**
+Copyright (c) 2026 perperwtl.
 
-MergePoll uses the custom [MergePoll Noncommercial Share-Alike License 1.0](LICENSE).
-Private modifications can stay private. Distributed modifications and modified
-network services must provide matching complete source under the same license.
-Educational and other institutions listed in the license may use it for their
-own activities regardless of funding. Third-party dependencies retain their
-own licenses. This project is **source available**, not OSI open source.
+Licensed under [AGPL-3.0-only](LICENSE). Personal, institutional and commercial
+use is permitted under AGPL. Distributed covered modifications must provide
+corresponding source under AGPL; modified versions offered over a network must
+prominently offer their corresponding source to interacting users.
 
-Read the [license guide](docs/LICENSING.md) for examples. For commercial permission,
-contact **[perperwtl@gmail.com](mailto:perperwtl@gmail.com)**.
+For alternative licensing inquiries, open a [GitHub Issue](https://github.com/perperwtl/MergePoll/issues).
+Alternative licensing is subject to a separate agreement; an inquiry does not
+grant an exemption from AGPL. Third-party dependencies retain their own licenses.
+See the [license guide](docs/LICENSING.md) for details.

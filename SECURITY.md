@@ -1,9 +1,13 @@
 # Security and privacy
 
-Report vulnerabilities privately to **[perperwtl@gmail.com](mailto:perperwtl@gmail.com)**.
-Include affected versions, steps to reproduce and expected impact. Do not post
-credentials, participant content or exploit details in a public issue. There is
-no promised response time or bounty program.
+For questions, bug reports and feature requests, use
+[GitHub Issues](https://github.com/perperwtl/MergePoll/issues).
+
+For security concerns, open an issue with a brief, sanitized description and
+affected versions. Do not include credentials, participant content, personal
+data or actionable exploit details in a public issue. If sensitive details are
+needed, ask the maintainer to arrange a private reporting channel before sharing
+them. There is no promised response time or bounty program.
 
 MergePoll is an experimental, single-room prototype. Only the latest version
 on `main` is maintained; stable releases and production support are not promised.

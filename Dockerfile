@@ -8,7 +8,7 @@ RUN npm run build
 
 FROM node:24-bookworm-slim
 WORKDIR /app
-LABEL org.opencontainers.image.source="https://github.com/perperwtl/MergePoll" org.opencontainers.image.licenses="LicenseRef-MergePoll-NC-SA-1.0"
+LABEL org.opencontainers.image.source="https://github.com/perperwtl/MergePoll" org.opencontainers.image.licenses="AGPL-3.0-only"
 ENV NODE_ENV=production WRANGLER_SEND_METRICS=false CLOUDFLARE_CF_FETCH_ENABLED=false WRANGLER_WRITE_LOGS=false
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/dist ./dist

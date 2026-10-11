@@ -1,7 +1,7 @@
 # Contribution license agreement
 
-The maintainer offers MergePoll under its noncommercial source-sharing license
-and may separately authorize commercial use. To make that possible for accepted
+The maintainer offers MergePoll under AGPL-3.0-only and may offer separate
+licenses with exemptions from AGPL obligations. To make that possible for accepted
 contributions, please explicitly accept the following terms in your pull request.
 You keep ownership and copyright in your contribution.
 
@@ -28,4 +28,4 @@ and explicitly agree to license this way. It does not cover unrelated code,
 your private forks, or issue comments. The maintainer must verify the acknowledgment
 before merging; the agreement is not collected through an external signing service.
 
-Questions: [perperwtl@gmail.com](mailto:perperwtl@gmail.com).
+Questions: [GitHub Issues](https://github.com/perperwtl/MergePoll/issues).

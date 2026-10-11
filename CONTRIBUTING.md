@@ -6,8 +6,8 @@ and improvements to the setup instructions.
 
 ## Before coding
 
-Read the [license guide](docs/LICENSING.md). This is a source-available project
-with noncommercial and institutional permissions. Discuss larger features in
+Read the [license guide](docs/LICENSING.md). This project is licensed under AGPL-3.0-only,
+which permits personal, institutional and commercial use. Discuss larger features in
 an issue before implementing them so the design and scope can be agreed on.
 
 ## Local workflow
@@ -42,4 +42,4 @@ code. The maintainer must confirm consent and third-party license compatibility
 before merging. No rights are assumed from a bug report or feature request.
 
 Please keep discussion respectful, explain disagreements with examples, and
-disclose security concerns privately as described in [SECURITY.md](SECURITY.md).
+report security concerns as described in [SECURITY.md](SECURITY.md).
