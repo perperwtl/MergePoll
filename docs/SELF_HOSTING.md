@@ -83,12 +83,14 @@ Keep the backup private; it contains questions and browser identities.
 
 Docker has no application question-count, task-count or grouping-attempt quota.
 The public ChatGPT Site separately allows 100 questions per task and applies
-browser-session and shared model budgets; those checks run only with
+per-task and shared model budgets; those checks run only with
 `PUBLIC_DEMO=true`, which Docker forces off. Both targets limit each post to
 500 characters and each event context to 2,000 characters to keep model inputs
 bounded. Provider quotas, machine capacity and all-pairs comparison cost still
 apply. `/new` starts an empty task in the existing shared room; submitting the
-setup replaces the previous task, questions, votes and history.
+setup replaces the previous task, questions, votes and history. The hosted
+Site creates separate random-link tasks with 24-hour expiry and one active task
+per browser. Those expiry, reservation and cleanup rules do not run in Docker.
 
 ## Configuration
 

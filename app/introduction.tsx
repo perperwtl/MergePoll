@@ -189,7 +189,7 @@ export default function Introduction({ demo }: { demo: boolean }) {
             <small>
               {demo
                 ? t(
-                    "Each browser gets a separate sandbox with 100 questions per task and ten live grouping passes. Grouping is manual, with a one-minute cooldown and a shared daily budget. Use synthetic questions; text is sent to TypeSafe.",
+                    "The climate demo is a private sandbox. Create one custom task per browser to share a participant link for 24 hours: 100 questions and 40 live grouping passes. Automatic cycles require the organizer view to stay open. Shared daily budgets apply; grouping sends text to TypeSafe.",
                   )
                 : t(
                     "Automatic cycles run while organizer view is open. There is one shared room with no application question-count or grouping quota. Separate events, QR joining, and large-event scaling are future steps.",

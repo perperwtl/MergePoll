@@ -2057,3 +2057,30 @@ textarea::placeholder {
     flex-shrink: 0;
   }
 }
+
+.task-lifetime {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  border: 1px solid #c5d0bd;
+  background: #edf2e7;
+  padding: 14px 18px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  color: #354b37;
+  font-variant-numeric: tabular-nums;
+}
+.task-lifetime span {
+  font-weight: 650;
+}
+.task-lifetime small {
+  color: #63735b;
+  margin-left: auto;
+}
+@media (max-width: 760px) {
+  .task-lifetime small {
+    width: 100%;
+    margin-left: 25px;
+  }
+}

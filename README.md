@@ -98,16 +98,19 @@ Try [a blank task](https://mergepoll.newreed128.chatgpt.site/new) or the climate
 2. Click **Group now**, inspect originals and open **Grouping lab**.
 3. Switch to Participant to post or vote, then Organizer to split or mark answered.
 
-The server uses a dedicated demo key. Each browser session gets **ten live
-grouping passes**, with a **one-minute cooldown** and **100 questions per task**.
-There are also shared daily budgets of **100 passes and 20,000 new pair
-comparisons (UTC)**. Resetting questions or creating a new task does not reset
-the allowance. Automatic grouping starts disabled. A different
-browser gets a different sandbox, so this demo is for individual exploration;
-use Docker for a shared room on your own machine.
+Create a custom task to get a **shareable participant link** to the same queue.
+Each browser can have **one active custom task**, lasting **24 hours**, with a
+visible countdown and automatic cleanup after expiry. The creator's browser
+cookie retains organizer access; no login is needed. Clearing cookies can bypass
+this browser limit. The climate walkthrough remains a private browser sandbox.
 
-Use synthetic questions: grouping sends text to TypeSafe. Scores vary and this
-small experiment is not a general accuracy benchmark. See [demo details](docs/LIVE_DEMO.md).
+Hosted tasks allow **100 total questions**, **500 characters per question**, and
+**40 live grouping attempts**, at least one minute apart. Custom tasks default
+to a three-minute cycle while the Organizer view stays open, covering a 90-minute
+class with headroom. Idle and cached checks do not spend attempts. Shared daily
+budgets are **500 attempts and 100,000 new pair comparisons (UTC)**.
+Read [live limits and retention](docs/LIVE_DEMO.md) for the full policy. Docker
+has no app-imposed count quota or automatic expiry.
 
 ## Try the experiment
 

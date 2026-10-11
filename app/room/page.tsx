@@ -52,6 +52,11 @@ type Room = {
   revision: number;
   lastGroupedIds?: string[];
   noNewQuestions?: boolean;
+  taskId?: string;
+  expiresAt?: number;
+  participantPath?: string;
+  participantActor?: string;
+  serverTime?: number;
 };
 export default function Home() {
   const { t } = useLanguage();
@@ -81,13 +86,34 @@ export default function Home() {
     [published, setPublished] = useState(true);
   const running = useRef(false),
     retryAt = useRef(0),
-    composerInput = useRef<HTMLTextAreaElement>(null);
+    composerInput = useRef<HTMLTextAreaElement>(null),
+    expired = useRef(false),
+    timeOffset = useRef(0);
+  function roomAPI() {
+    const id = location.pathname.match(/^\/room\/([a-f0-9-]+)\/?$/)?.[1];
+    return "/api/room" + (id ? "?task=" + encodeURIComponent(id) : "");
+  }
+  function acceptRoom(d: Room) {
+    if (d.serverTime) {
+      timeOffset.current = d.serverTime - Date.now();
+      setNow(d.serverTime);
+    }
+    if (d.participantActor) setActor(d.participantActor);
+    setRoom((prev) => (!prev || d.revision >= prev.revision ? d : prev));
+  }
   async function refresh() {
+    if (expired.current) return;
     try {
-      const r = await fetch("/api/room", { cache: "no-store" });
+      const r = await fetch(roomAPI(), { cache: "no-store" });
       const d = (await r.json()) as Room & { error?: string };
-      if (!r.ok) throw new Error(d.error);
-      setRoom((prev) => (!prev || d.revision >= prev.revision ? d : prev));
+      if (!r.ok) {
+        if (r.status === 410 || r.status === 404) {
+          expired.current = true;
+          setRoom(null);
+        }
+        throw new Error(d.error);
+      }
+      acceptRoom(d);
     } catch (e) {
       setError((e as Error).message);
     }
@@ -100,13 +126,18 @@ export default function Home() {
     }
     setActor(id);
     if (
+      (location.pathname.startsWith("/room/") &&
+        new URLSearchParams(location.search).get("view") !== "organizer") ||
       new URLSearchParams(location.search).get("view") === "participant" ||
       new URLSearchParams(location.search).get("view") === "student"
     )
       setMode("participant");
     refresh();
     const poll = setInterval(refresh, 3000);
-    const clock = setInterval(() => setNow(Date.now()), 1000);
+    const clock = setInterval(
+      () => setNow(Date.now() + timeOffset.current),
+      1000,
+    );
     return () => {
       clearInterval(poll);
       clearInterval(clock);
@@ -142,14 +173,20 @@ export default function Home() {
     setBusy(true);
     setError("");
     try {
-      const r = await fetch("/api/room", {
+      const r = await fetch(roomAPI(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, actor, ...data }),
       });
       const d = (await r.json()) as Room & { error?: string };
-      if (!r.ok) throw new Error(d.error);
-      setRoom((prev) => (!prev || d.revision >= prev.revision ? d : prev));
+      if (!r.ok) {
+        if (r.status === 410 || r.status === 404) {
+          expired.current = true;
+          setRoom(null);
+        }
+        throw new Error(d.error);
+      }
+      acceptRoom(d);
       if (action === "submit") {
         setText("");
         setComposerOpen(false);
@@ -195,6 +232,8 @@ export default function Home() {
       !room.canTeach ||
       !room.published ||
       !room.interval ||
+      (room.publicDemo && room.demoRunsRemaining === 0) ||
+      (room.expiresAt && now >= room.expiresAt) ||
       (room.lock && now - room.lock < 300000) ||
       running.current ||
       now < retryAt.current
@@ -287,7 +326,7 @@ export default function Home() {
       if (actual && !expected) fp++;
       if (!actual && expected) fn++;
     }
-  if (!room)
+  if (!room || (room.expiresAt && now >= room.expiresAt))
     return (
       <div className="intro">
         <nav className="intro-nav">
@@ -297,12 +336,24 @@ export default function Home() {
         </nav>
         <main>
           <h1>
-            {error ? t("Could not open the event") : t("Opening your event…")}
+            {expired.current || room?.expiresAt
+              ? t("This task has expired.")
+              : error
+                ? t("Could not open the event")
+                : t("Opening your event…")}
           </h1>
           <p role="status">
-            {t(error) || t("Loading the shared queue and event settings.")}
+            {expired.current || room?.expiresAt
+              ? t(
+                  "Custom tasks last 24 hours. Ask the organizer for a new task link.",
+                )
+              : t(error) || t("Loading the shared queue and event settings.")}
           </p>
-          {error && (
+          <LanguageSwitch />
+          <a className="outline" href="/new">
+            {t("Create your own task")}
+          </a>
+          {error && !expired.current && (
             <button className="primary" onClick={refresh}>
               {t("Try again")}
             </button>
@@ -391,13 +442,14 @@ export default function Home() {
           </div>
           <div className="top-actions">
             <LanguageSwitch />
-            {!room.publicDemo && (
+            {(!room.publicDemo || room.taskId) && (
               <button
                 className="outline share-link"
                 onClick={async () => {
                   try {
                     await navigator.clipboard.writeText(
-                      location.origin + "/room?view=participant",
+                      location.origin +
+                        (room.participantPath || "/room?view=participant"),
                     );
                     setNotice(
                       t(
@@ -418,15 +470,17 @@ export default function Home() {
             )}
             <span className="demo-pill">{t("INTERACTIVE DEMO")}</span>
             <div className="mode-switch">
-              <button
-                className={mode === "organizer" ? "on" : ""}
-                onClick={() => {
-                  setMode("organizer");
-                  if (!room.canTeach) setLogin(true);
-                }}
-              >
-                {t("Organizer")}
-              </button>
+              {(!room.taskId || room.canTeach) && (
+                <button
+                  className={mode === "organizer" ? "on" : ""}
+                  onClick={() => {
+                    setMode("organizer");
+                    if (!room.canTeach) setLogin(true);
+                  }}
+                >
+                  {t("Organizer")}
+                </button>
+              )}
               <button
                 className={mode === "participant" ? "on" : ""}
                 onClick={() => setMode("participant")}
@@ -446,13 +500,32 @@ export default function Home() {
           </div>
         </header>
         <main>
+          {room.taskId && room.expiresAt && (
+            <div className="task-lifetime" role="status">
+              <Clock3 size={17} />
+              <span>
+                {t("This task expires in {time}", {
+                  time: `${Math.floor(Math.max(0, room.expiresAt - now) / 3600000)}:${String(Math.floor(Math.max(0, room.expiresAt - now) / 60000) % 60).padStart(2, "0")}:${String(Math.floor(Math.max(0, room.expiresAt - now) / 1000) % 60).padStart(2, "0")}`,
+                })}
+              </span>
+              <small>
+                {t(
+                  "24-hour lifetime · expired task data is automatically deleted",
+                )}
+              </small>
+            </div>
+          )}
           {room.publicDemo && (
             <div className="notice" role="status">
-              {t("Live experiment · Your own browser sandbox.")}{" "}
-              {room.demoRunsRemaining ?? 10}{" "}
-              {t(
-                "live grouping passes left · 100 total questions per task · 500 characters each · one minute between passes. Questions go to TypeSafe when you group. Use synthetic examples.",
-              )}
+              {room.taskId
+                ? t(
+                    "Shared task · Participants with the link join this room. {runs} live grouping passes left; 100 total questions, 500 characters each. Shared daily model budgets apply.",
+                    { runs: room.demoRunsRemaining ?? 40 },
+                  )
+                : t(
+                    "Climate demo · Private browser sandbox · {runs} live grouping passes left; 100 total questions, 500 characters each. Create a custom task to share with your audience.",
+                    { runs: room.demoRunsRemaining ?? 40 },
+                  )}
             </div>
           )}
           {room.localDemo && (
@@ -968,24 +1041,26 @@ export default function Home() {
                   <ArrowUpRight size={14} />
                 </button>
               </section>
-              <section className="demo-card">
-                <div>
-                  <FlaskConical size={17} />
-                  <span>{t("TRY THE EXPERIMENT")}</span>
-                </div>
-                <h3>{t("10 questions. How many answers?")}</h3>
-                <p>
-                  {t(
-                    "Four paraphrase pairs and two distinct questions. Test how well Jev understands the difference.",
-                  )}
-                </p>
-                <button
-                  disabled={busy || mode !== "organizer" || !room.canTeach}
-                  onClick={() => setResetConfirm(true)}
-                >
-                  <RefreshCw size={14} /> {t("Reset test questions")}
-                </button>
-              </section>
+              {!room.taskId && (
+                <section className="demo-card">
+                  <div>
+                    <FlaskConical size={17} />
+                    <span>{t("TRY THE EXPERIMENT")}</span>
+                  </div>
+                  <h3>{t("10 questions. How many answers?")}</h3>
+                  <p>
+                    {t(
+                      "Four paraphrase pairs and two distinct questions. Test how well Jev understands the difference.",
+                    )}
+                  </p>
+                  <button
+                    disabled={busy || mode !== "organizer" || !room.canTeach}
+                    onClick={() => setResetConfirm(true)}
+                  >
+                    <RefreshCw size={14} /> {t("Reset test questions")}
+                  </button>
+                </section>
+              )}
             </aside>
           </div>
           {!composerOpen && (
@@ -1166,7 +1241,7 @@ export default function Home() {
                     value={interval}
                     onChange={(e) => setIntervalValue(Number(e.target.value))}
                   >
-                    {!room.publicDemo && (
+                    {(!room.publicDemo || room.taskId) && (
                       <>
                         <option value={60}>{t("Every 1 minute")}</option>
                         <option value={120}>
@@ -1206,7 +1281,7 @@ export default function Home() {
               <p className="fine-print">
                 {room.publicDemo
                   ? t(
-                      "Hosted tasks allow 100 total questions and manual grouping with shared session and daily budgets.",
+                      "Hosted tasks allow 100 total questions and 40 grouping attempts. Automatic cycles run while the organizer view is open; idle checks do not use the model allowance.",
                     )
                   : t(
                       "Automatic passes run while the organizer view is open. No application question-count or grouping quota; your own provider limits apply.",

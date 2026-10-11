@@ -342,4 +342,36 @@ export const zh: Record<string, string> = {
   "ROOM PAUSED": "房间已暂停",
   "ready to group": "等待分组",
   "The room changed. Please group again.": "房间内容已改变，请重新分组。",
+  "The climate demo is a private sandbox. Create one custom task per browser to share a participant link for 24 hours: 100 questions and 40 live grouping passes. Automatic cycles require the organizer view to stay open. Shared daily budgets apply; grouping sends text to TypeSafe.":
+    "气候演示是独立沙盒。每个浏览器可创建一个自定义任务，分享有效期为 24 小时的参与者链接：最多 100 个问题、40 次实时分组。自动分组需要组织者视图保持打开。另有每日共享预算；分组时文本会发送给 TypeSafe。",
+  "Hosted task: one active task per browser, shared participant link, 24-hour lifetime. Up to 100 questions, 500 characters each, and 40 live grouping passes. The default cycle is three minutes while the organizer view is open. Shared daily budgets also apply.":
+    "在线任务：每个浏览器最多一个有效任务，可分享参与者链接，有效期 24 小时。最多 100 个问题，每个 500 字符，可实时分组 40 次。组织者视图打开时，默认每三分钟检查一次。另有每日共享预算。",
+  "Keep this browser's cookies to retain organizer access. The participant link does not grant organizer control. Clearing cookies or using another browser can bypass the one-task limit.":
+    "请保留此浏览器的 Cookie 以保留组织者权限。参与者链接不授予组织者权限。清除 Cookie 或换用另一个浏览器可以绕过单任务限制。",
+  "This browser already has an active task.": "此浏览器已有一个有效任务。",
+  "Open your active task": "打开你的有效任务",
+  "This task has expired.": "此任务已过期。",
+  "Custom tasks last 24 hours. Ask the organizer for a new task link.":
+    "自定义任务有效期为 24 小时。请向组织者索取新的任务链接。",
+  "Create your own task": "创建自己的任务",
+  "This task expires in {time}": "任务将在 {time} 后过期",
+  "24-hour lifetime · expired task data is automatically deleted":
+    "有效期 24 小时 · 过期任务数据将自动清理",
+  "Shared task · Participants with the link join this room. {runs} live grouping passes left; 100 total questions, 500 characters each. Shared daily model budgets apply.":
+    "共享任务 · 持有链接的参与者可加入此房间。剩余 {runs} 次实时分组；最多 100 个问题，每个 500 字符。另有每日共享模型预算。",
+  "Climate demo · Private browser sandbox · {runs} live grouping passes left; 100 total questions, 500 characters each. Create a custom task to share with your audience.":
+    "气候演示 · 独立浏览器沙盒 · 剩余 {runs} 次实时分组；最多 100 个问题，每个 500 字符。创建自定义任务即可与观众分享。",
+  "Hosted tasks allow 100 total questions and 40 grouping attempts. Automatic cycles run while the organizer view is open; idle checks do not use the model allowance.":
+    "在线任务最多 100 个问题，可分组 40 次。组织者视图打开时运行自动周期；没有新比较的检查不消耗模型额度。",
+  "This task link is invalid.": "任务链接无效。",
+  "This task has expired. Custom tasks are available for 24 hours.":
+    "此任务已过期。自定义任务有效期为 24 小时。",
+  "This task has expired or does not exist.": "此任务已过期或不存在。",
+  "This browser already has an active task. Open it again; you can create another after it expires.":
+    "此浏览器已有一个有效任务。请重新打开它；任务过期后可以再创建一个。",
+  "Create a task from the setup page.": "请从设置页面创建任务。",
+  "Demo limit: 40 live grouping passes per task. Use Docker for further experiments.":
+    "在线体验上限：每项任务可实时分组 40 次。更多实验请使用 Docker。",
+  "Task limit: 100 questions including answered questions. Use votes on existing questions or run Docker.":
+    "任务达到上限：最多 100 个问题，包含已回答的问题。请支持已有问题或运行 Docker。",
 };

@@ -1,70 +1,84 @@
-# Live experiment
+# Live MergePoll
 
-[Try MergePoll in your browser](https://mergepoll.newreed128.chatgpt.site/).
-The experiment is hosted with Codex Sites. No account, installation or personal
-API key is required. The host supplies a dedicated TypeSafe key as a server secret.
+[Open MergePoll](https://mergepoll.newreed128.chatgpt.site/) or
+[create your own task](https://mergepoll.newreed128.chatgpt.site/new).
+No account, installation or personal API key is required. The host supplies a
+TypeSafe key as a server-only secret. Grouping sends question text and event
+context to TypeSafe; use appropriate, non-private examples.
 
-Each browser receives a separate room, identified by an opaque HttpOnly cookie.
-Both Organizer and Participant views use that room. Another browser or private
-window gets a different room; this sandbox does not simulate multiple attendees
-sharing one event. Cookies expire after 12 hours. This is an experimental demo;
-do not enter private data. There is no automatic database deletion policy yet.
+## Shared custom tasks
+
+1. Open **Try it with your own task** and give the task a name and optional context.
+2. The server creates an empty task with a random `/room/<UUID>` URL.
+3. **Share room** copies that URL with `?view=participant`. Other browsers join
+   the same queue, can ask and vote, and cannot change settings or group questions.
+4. Keep the creator's browser cookies for organizer access. Adding
+   `?view=organizer` to a participant URL does not grant that access.
+5. A visible countdown shows the 24-hour deadline from creation. Editing,
+   clearing questions or visiting the task does not extend it.
+
+Each browser can have **one active custom task**. Concurrent create requests
+are reserved atomically. `/new` offers a link back to the existing task.
+After expiry the same browser can create another task. Without login this is a
+browser limit, not verified person identity: clearing cookies, private browsing
+or another browser can bypass it. We do not fingerprint visitors. Shared daily
+model budgets still apply across all browsers.
+
+## Expiry and deletion
+
+At 24 hours the server refuses reads and writes, and the client closes the task.
+An expired task is deleted when accessed. The Site's hourly cleanup task calls
+`POST /api/tasks/cleanup` to delete expired task rows and browser reservations
+when nobody visits. Physical deletion may lag the deadline by up to an hour
+under normal scheduling; scheduler failures can delay it further. Access expiry
+does not depend on the schedule. Active tasks and Docker data are never selected
+by cleanup. The cutoff is server time and cannot be supplied by a caller.
+
+The cleanup task does not republish the Site or call the model. Its endpoint
+returns only a deleted-row count. No visitor identity or secret is needed to
+trigger this bounded, idempotent removal of already-expired rows. This policy
+covers newly created shared tasks; legacy personal demo rooms are retained.
+
+## Grouping allowances
+
+- **100 total submitted questions per task**, including answered questions.
+  Clearing questions does not reset the count. Each post is at most 500 UTF-16
+  code units (browser `maxLength`), and event context is at most 2,000.
+- **40 live grouping attempts per task** with at least one minute between them.
+  A 90-minute class checking every three minutes needs at most 30 attempts;
+  40 leaves room for manual passes. No-new-question and fully cached checks
+  do not consume the allowance. Failed model attempts count.
+- Custom tasks default to **three-minute automatic checks** while the authorized
+  Organizer view remains open. Closing it stops automatic checks; participants
+  cannot initiate model calls. **Group now** remains available.
+- Shared daily caps: **500 grouping attempts and 100,000 new pair comparisons**,
+  resetting at UTC midnight. Provider retries may repeat comparisons. These are
+  request budgets, not a guaranteed currency-denominated bill; provider spending
+  limits remain separate. A task can still accept questions and votes after its
+  model allowance is exhausted, until its deadline or question cap.
+- The Climate Change 101 walkthrough remains a private browser sandbox with
+  ten seed questions and manual grouping. It has its own 40-attempt allowance.
+  Its URL does not share the sandbox. Resetting it preserves used allowances.
 
 ## Deployment boundary
 
-Docker (`PUBLIC_DEMO=false`) uses the operator’s own key and one shared room,
-with no application question-count or grouping-attempt quota. The hosted Site
-(`PUBLIC_DEMO=true`) uses a server-only maintainer key and browser-isolated
-sandboxes with the allowances below. Neither target collects visitor API keys.
-Both cap individual posts at 500 characters and batch Jev comparisons to fit
-its context window; these are input safeguards, not Docker usage quotas.
+| Behavior | Docker (`PUBLIC_DEMO=false`) | Public ChatGPT Site (`PUBLIC_DEMO=true`) |
+| --- | --- | --- |
+| Room | One operator-managed shared room | Private climate walkthrough plus shared custom tasks |
+| Key | Operator's own TypeSafe key | Maintainer's server secret |
+| Question/grouping count quota | None imposed by the app | Per-task and shared daily budgets above |
+| Custom task lifetime | No automatic expiry or cleanup | One active task per browser, 24 hours |
+| Organizer access | Local controls or configured organizer token | Private HttpOnly browser cookie |
+| Participant link | Shared local room | Random custom-task URL, participant view |
 
-**Try it with your own task** opens `/new`, a blank setup form. Creating a task
-replaces the current room’s questions, votes and history after an explicit submit.
-It preserves browser-session model allowances; demo and custom tasks share them.
-Task setup and language switching require no new Site capabilities, secrets,
-storage bindings or scheduled jobs. Existing D1 room JSON stores the task.
+Both targets bound individual text inputs and comparison batches. Jev's
+[model documentation](https://docs.typesafe.ai/models.md), checked 2026-10-11,
+specifies 64k tokens per request and 32k for state plus the longest question.
+100 audience questions need up to 4,950 pair decisions, split into requests using
+conservative UTF-8 byte bounds. This product cap is not Jev's question-count limit.
 
-## Walkthrough
-
-1. Open the introduction and enter Climate Change 101.
-2. Click **Group now** to compare the ten seed questions with real Jev predictions.
-3. Expand a group's original wording and inspect the Grouping lab.
-4. Mark questions answered, reopen them, or split a mistaken merge.
-5. Try “How does climate change affect ocean life?” and
-   “Will climate change affect ocean life?” after making room in the queue.
-
-## Allowances
-
-- 100 questions per task, including answered questions; 500 characters per question.
-- Ten live model grouping attempts per browser session, with one minute between attempts.
-- A shared daily cap of 100 grouping attempts across all visitors, resetting at UTC midnight.
-- A shared daily cap of 20,000 new pair comparisons (failed attempts count; provider retries can repeat them).
-- Cached comparisons and no-new-question cycles do not consume model attempts.
-- Resetting the question set preserves used allowances. Failed model attempts
-  count too. A visit can still post, vote and inspect results after its quota is used.
-- Automatic grouping starts disabled. Use **Group now** for the walkthrough.
-
-The caps bound model requests, not a currency-denominated bill. Provider-side
-spending limits are separate. For further experimentation use [Docker](SELF_HOSTING.md)
-with your own key. The demo does not distribute the host's key or grant production
-hosting access. Question text and event context go to TypeSafe during grouping.
-
-## Hosted source
-
-The demo's application code is in `app/` and `lib/` in this repository.
-The maintainer's demo uses browser sandboxes; local Docker uses a shared room
-with optional organizer authentication. Docker is the supported setup for
-running your own copy. The hosted demo is provided for quick visitor trials.
-
-The [hosted build overlay](../hosting/sites/README.md) includes its lockfile,
-retained build scripts and migration history so the served version can be rebuilt.
-
-## Model sizing
-
-100 audience questions require up to 4,950 pair decisions. This is our hosted
-product allowance, not Jev’s question limit. As checked on 2026-10-11, the
-[model documentation](https://docs.typesafe.ai/models.md) specifies 64k tokens
-per request and 32k for state plus the longest question. Comparison requests
-use conservative UTF-8 byte bounds with room for shared state. Docker can
-accept more questions, but all-pairs time, memory and provider cost grow quadratically.
+The shared code lives in root `app/` and `lib/`. The
+[hosted overlay](../hosting/sites/README.md) retains the build integration and
+D1 migrations. Tasks and reservations reuse the existing rooms table's JSON;
+this release requires no schema, binding, secret or access-policy changes. The
+hourly cleanup is one additional Site-linked cloud schedule.

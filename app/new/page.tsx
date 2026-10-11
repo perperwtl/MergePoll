@@ -14,6 +14,10 @@ export default function NewTask() {
   const [canTeach, setCanTeach] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [activeTask, setActiveTask] = useState<{
+    path: string;
+    expiresAt: number;
+  } | null>(null);
   useEffect(() => {
     fetch("/api/room", { cache: "no-store" })
       .then(async (r) => {
@@ -21,10 +25,12 @@ export default function NewTask() {
           error?: string;
           publicDemo?: boolean;
           canTeach: boolean;
+          activeCustomTask?: { path: string; expiresAt: number };
         };
         if (!r.ok) throw new Error(d.error);
         setDemo(!!d.publicDemo);
         setCanTeach(d.canTeach);
+        setActiveTask(d.activeCustomTask || null);
         setReady(true);
       })
       .catch((e) => setError(e.message));
@@ -73,18 +79,20 @@ export default function NewTask() {
                   action: "start",
                   title,
                   description,
-                  interval: 0,
+                  interval: demo ? 180 : 0,
                   threshold: 0.7,
                   published: true,
                 }),
               });
               const d = (await r.json()) as {
                 error?: string;
+                roomPath?: string;
                 publicDemo?: boolean;
                 canTeach: boolean;
+                activeCustomTask?: { path: string; expiresAt: number };
               };
               if (!r.ok) throw new Error(d.error);
-              location.assign("/room");
+              location.assign((d.roomPath || "/room") + "?view=organizer");
             } catch (e) {
               setError((e as Error).message);
               setBusy(false);
@@ -101,6 +109,7 @@ export default function NewTask() {
             onChange={(e) => setTitle(e.target.value)}
             maxLength={100}
             required
+            disabled={!!activeTask}
             placeholder={t("Workshop, team Q&A, song requests…")}
           />
           <label htmlFor="task-context">
@@ -112,6 +121,7 @@ export default function NewTask() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             maxLength={2000}
+            disabled={!!activeTask}
             placeholder={t(
               "What is this event about? What can people ask or request?",
             )}
@@ -120,7 +130,7 @@ export default function NewTask() {
           <div className="notice">
             {demo
               ? t(
-                  "Hosted trial: 100 questions per task, 500 characters each. Ten live grouping passes per browser session, one minute apart, plus shared daily budgets. Starting a task preserves used model allowances. Each browser has its own sandbox; this is not a shared event link.",
+                  "Hosted task: one active task per browser, shared participant link, 24-hour lifetime. Up to 100 questions, 500 characters each, and 40 live grouping passes. The default cycle is three minutes while the organizer view is open. Shared daily budgets also apply.",
                 )
               : t(
                   "Docker: one shared room, your own TypeSafe key, no application question-count or grouping quota. Each question can contain up to 500 characters.",
@@ -128,9 +138,19 @@ export default function NewTask() {
           </div>
           <p className="fine-print">
             {t(
-              "Creating this task replaces the current room’s questions, votes and history. Nothing changes until you click Create task.",
+              demo
+                ? "Keep this browser's cookies to retain organizer access. The participant link does not grant organizer control. Clearing cookies or using another browser can bypass the one-task limit."
+                : "Creating this task replaces the current room’s questions, votes and history. Nothing changes until you click Create task.",
             )}
           </p>
+          {activeTask && (
+            <div className="notice">
+              <p>{t("This browser already has an active task.")}</p>
+              <a className="primary" href={activeTask.path + "?view=organizer"}>
+                {t("Open your active task")}
+              </a>
+            </div>
+          )}
           {ready && !canTeach && (
             <p>
               <a href="/room">
@@ -145,7 +165,9 @@ export default function NewTask() {
           )}
           <button
             className="primary full"
-            disabled={!ready || !canTeach || busy || !title.trim()}
+            disabled={
+              !ready || !canTeach || !!activeTask || busy || !title.trim()
+            }
           >
             {busy ? t("Creating…") : t("Create task")}
             <ArrowRight size={17} />

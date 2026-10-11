@@ -13,7 +13,7 @@ test("demo access is opt-in and new visitors receive separate opaque rooms", () 
   const a = demoSession(req, true, true)!;
   const b = demoSession(req, true, true)!;
   assert.notEqual(a.id, b.id);
-  assert.match(a.cookie!, /HttpOnly; SameSite=Strict; Max-Age=43200; Secure$/);
+  assert.match(a.cookie!, /HttpOnly; SameSite=Lax; Max-Age=31536000; Secure$/);
   const returning = new Request(req, {
     headers: { cookie: a.cookie!.split(";")[0] },
   });
@@ -29,8 +29,8 @@ test("demo access is opt-in and new visitors receive separate opaque rooms", () 
 });
 
 test("demo quotas and cooldown do not reset with question resets", () => {
-  assert.equal(demoGroupingError({ demoRuns: 9 }, 100_000), null);
-  assert.match(demoGroupingError({ demoRuns: 10 }, 100_000)!, /ten/);
+  assert.equal(demoGroupingError({ demoRuns: 39 }, 100_000), null);
+  assert.match(demoGroupingError({ demoRuns: 40 }, 100_000)!, /40/);
   assert.match(
     demoGroupingError({ demoLastAttempt: 90_000 }, 100_000)!,
     /one minute/,
