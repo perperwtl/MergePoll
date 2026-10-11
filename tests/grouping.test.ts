@@ -98,3 +98,35 @@ test("a policy upgrade preserves originals, supporters, history and split exclus
   assert.equal(upgradeMergePolicy(state), false);
   assert.equal(state.threshold, 0.95);
 });
+
+test("long posts are split across requests that stay inside the model context", async () => {
+  const qs = Array.from({ length: 30 }, (_, i) => ({
+    ...seed()[0],
+    id: "long-" + i,
+    text: String(i).repeat(250).slice(0, 500),
+  }));
+  const sizes: number[] = [];
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = (async (_url: string, init: RequestInit) => {
+    const questions = JSON.parse(String(init.body)).questions;
+    sizes.push(Object.keys(questions).length);
+    const answers = Object.fromEntries(
+      Object.keys(questions).map((id) => [id, { type: "noul", noul: 0.1 }]),
+    );
+    return new Response(JSON.stringify({ model: "jev-test", answers }));
+  }) as typeof fetch;
+  try {
+    const result = await evaluate("key", "Test", "", qs, {});
+    assert.equal(result.pairs, 435);
+    assert.equal(Object.keys(result.scores).length, 435);
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+  assert.equal(sizes.length, 6);
+  assert.equal(
+    sizes.reduce((a, b) => a + b),
+    435,
+  );
+  // ~410 estimated tokens per long pair: 73 pairs stays far below 64k.
+  assert.ok(Math.max(...sizes) <= 73);
+});

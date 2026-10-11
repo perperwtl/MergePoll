@@ -126,12 +126,27 @@ export async function evaluate(
   const scores = { ...cached };
   const usage = { input_tokens: 0, output_tokens: 0 };
   let model = "jev-1.13.0";
-  // 250 short pairs fit well inside Jev's 64k context. Send up to 6 at once,
-  // the Workers limit on simultaneous outbound connections.
+  // Spread pairs evenly over up to 6 concurrent requests (the Workers limit on
+  // simultaneous outbound connections), keeping each one's estimated input well
+  // inside Jev's 64k context even when posts are long.
   const entries = Object.entries(body.questions);
-  const chunks: (typeof entries)[] = [];
-  for (let offset = 0; offset < entries.length; offset += 250)
-    chunks.push(entries.slice(offset, offset + 250));
+  const perRequest = Math.ceil(entries.length / 6);
+  const chunks: (typeof entries)[] = [[]];
+  let budget = 0;
+  for (const entry of entries) {
+    const { question_a, question_b } = (entry[1] as any).instructions;
+    const tokens = (question_a.length + question_b.length) / 3 + 80;
+    let chunk = chunks[chunks.length - 1];
+    if (
+      chunk.length &&
+      (chunk.length >= perRequest || budget + tokens > 40000)
+    ) {
+      chunks.push((chunk = []));
+      budget = 0;
+    }
+    chunk.push(entry);
+    budget += tokens;
+  }
   const send = async (chunk: typeof entries) => {
     let response: Response | undefined;
     for (let attempt = 0; attempt < 3; attempt++) {
@@ -172,10 +187,15 @@ export async function evaluate(
       scores[pairs[id]] = value;
     }
   };
-  let next = 0;
+  let next = 0,
+    failed = false;
   await Promise.all(
     Array.from({ length: Math.min(6, chunks.length) }, async () => {
-      while (next < chunks.length) await send(chunks[next++]);
+      while (!failed && next < chunks.length)
+        await send(chunks[next++]).catch((e) => {
+          failed = true;
+          throw e;
+        });
     }),
   );
 

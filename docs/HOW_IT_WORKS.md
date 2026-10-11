@@ -26,8 +26,8 @@ flowchart LR
 
 The current model is `jev-1.13.0`, with TypeSafe's Noul primitive. The merge
 policy is sent once per request in `state`; each pair judgment carries only its
-two texts and points at that policy. Requests hold up to 250 pair judgments and
-up to 6 run concurrently. The implementation retries 429 and 529 responses, validates that every score is a number between 0 and 1,
+two texts and points at that policy. Pairs are spread over up to 6 concurrent requests,
+sized by estimated tokens to stay inside the model context. The implementation retries 429 and 529 responses, validates that every score is a number between 0 and 1,
 and retains existing questions if a pass fails.
 
 Clustering is greedy in question creation order. A new member must clear the
