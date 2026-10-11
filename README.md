@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <a href="https://course-pulse-semantic.newreed128.chatgpt.site/">Live demo</a> ·
+  <a href="https://mergepoll.newreed128.chatgpt.site/">Live demo</a> ·
   <a href="#quick-start">Run with Docker</a> ·
   <a href="#try-the-experiment">Try the experiment</a> ·
   <a href="docs/SELF_HOSTING.md">Self-host</a> ·
