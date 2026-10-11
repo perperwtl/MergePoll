@@ -12,8 +12,9 @@
     "build": "vite build",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
-    "format": "prettier --write app lib tests *.ts *.mjs *.json wrangler.jsonc",
-    "format:check": "prettier --check app lib tests *.ts *.mjs *.json wrangler.jsonc"
+    "eval:grouping": "node --experimental-strip-types evals/grouping.ts",
+    "format": "prettier --write app lib tests evals *.ts *.mjs *.json wrangler.jsonc",
+    "format:check": "prettier --check app lib tests evals *.ts *.mjs *.json wrangler.jsonc"
   },
   "dependencies": {
     "lucide-react": "1.31.0",

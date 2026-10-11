@@ -1,5 +1,5 @@
 import type { Question } from "./grouping";
-export const MERGE_POLICY = "shared-response-v2";
+export const MERGE_POLICY = "shared-response-v4";
 export type PolicyState = {
   mergePolicy?: string;
   threshold: number;

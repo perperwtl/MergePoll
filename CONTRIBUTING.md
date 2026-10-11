@@ -25,6 +25,28 @@ change concerns Jev behavior, describe any separately run live checks and their
 limitations. Never put participant data, secrets or identifying information in
 fixtures or screenshots.
 
+## Changing grouping instructions
+
+The Jev judgment and criteria in `lib/grouping.ts` decide what merges. Any change
+to them must be checked against the labelled pairs in
+`evals/grouping-pairs.json`:
+
+```bash
+npm run eval:grouping -- --runs 3
+```
+
+This calls TypeSafe with your own `TYPESAFE_API_KEY` (from the environment or
+`.env`) and spends credits, so it is not part of `npm test` or CI. It exits
+non-zero when a pair lands on the wrong side of the 0.7 threshold; repeated runs
+expose pairs that flip between runs. Paste the summary into your pull request.
+
+Add a pair for every behavior you change or bug you fix, including the cases
+that must stay separate. Each case needs `a`, `b`, `merge` and a short `why`.
+Optional `contexts` limits it to named event contexts; otherwise it runs in all
+of them. Mark a pair the instructions still get wrong with a `known` note instead
+of deleting it. `npm test` checks the file is well formed. If stored scores should
+be recomputed after the change, bump `MERGE_POLICY` in `lib/merge-policy.ts`.
+
 ## Where to help
 
 - **Grouping examples:** similar wording with different answers, broader/narrower

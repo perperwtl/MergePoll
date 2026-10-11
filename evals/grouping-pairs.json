@@ -1,0 +1,177 @@
+{
+  "contexts": {
+    "social": {
+      "event": "Friday night social",
+      "description": "A casual evening event with a DJ, food, and a short climate talk."
+    },
+    "climate": {
+      "event": "Climate Change 101",
+      "description": "An introduction to the climate system, greenhouse gases, evidence of human-caused warming, sea-level rise, and practical climate action."
+    }
+  },
+  "cases": [
+    {
+      "a": "I want to hear song Where are you",
+      "b": "add song to the playlist: Where are you",
+      "merge": true,
+      "why": "Both want the same song played; adding to the playlist is how it gets played."
+    },
+    {
+      "a": "Can you play Where Are You next?",
+      "b": "I want to hear song Where are you",
+      "merge": true,
+      "why": "Same song, same outcome."
+    },
+    {
+      "a": "Please play Where Are You",
+      "b": "Where Are You please!!",
+      "merge": true,
+      "why": "A bare title is a request to play it."
+    },
+    {
+      "a": "Could we get more vegetarian options at lunch?",
+      "b": "Please add vegetarian food to the lunch menu",
+      "merge": true,
+      "why": "Same menu change, phrased as a question and as a request."
+    },
+    {
+      "a": "Can you turn the music up?",
+      "b": "The music is too quiet, louder please",
+      "merge": true,
+      "why": "Same volume change."
+    },
+    {
+      "a": "I want to hear song Where are you",
+      "b": "add song to the playlist: Shape of You",
+      "merge": false,
+      "why": "Different songs."
+    },
+    {
+      "a": "Can you play Where Are You?",
+      "b": "Please skip Where Are You, I don't like it",
+      "merge": false,
+      "why": "Same song, opposite outcomes."
+    },
+    {
+      "a": "Can you turn the music up?",
+      "b": "Can you play Where Are You?",
+      "merge": false,
+      "why": "Different actions."
+    },
+    {
+      "a": "Play Where Are You now",
+      "b": "Play Where Are You at the end of the night",
+      "merge": false,
+      "why": "Different timing."
+    },
+    {
+      "a": "Can you turn the music up?",
+      "b": "Can you turn the music down?",
+      "merge": false,
+      "why": "Opposite directions."
+    },
+    {
+      "a": "how is shark population affected by climte change?",
+      "b": "how did climate change affect ocean animals?",
+      "merge": false,
+      "why": "A general ocean-animals answer does not cover shark populations."
+    },
+    {
+      "a": "What is the difference between weather and climate?",
+      "b": "How is climate different from day-to-day weather?",
+      "merge": true,
+      "why": "Paraphrase."
+    },
+    {
+      "a": "How do greenhouse gases warm the Earth?",
+      "b": "Why does CO2 trap heat in the atmosphere?",
+      "merge": true,
+      "why": "One greenhouse-effect explanation answers both."
+    },
+    {
+      "a": "What is the difference between weather and climate?",
+      "b": "How do greenhouse gases warm the Earth?",
+      "merge": false,
+      "why": "Same course, different answers."
+    },
+    {
+      "a": "Will climate change affect ocean life?",
+      "b": "What can we do to protect ocean life from climate change?",
+      "merge": false,
+      "why": "Effects versus protective actions."
+    },
+    {
+      "a": "Can the speaker share the slides?",
+      "b": "Please upload the presentation deck afterwards",
+      "merge": true,
+      "why": "Same action: share the slides."
+    },
+    {
+      "a": "Can we take a 5-minute break?",
+      "b": "Need a quick break please",
+      "merge": true,
+      "why": "Same request."
+    },
+    {
+      "a": "Can you speak louder?",
+      "b": "Mic volume up please, can't hear in the back",
+      "merge": true,
+      "why": "Same outcome: the speaker is audible."
+    },
+    {
+      "a": "Go back one slide please",
+      "b": "Can you show the previous slide again?",
+      "merge": true,
+      "why": "Same action."
+    },
+    {
+      "a": "Can we get a shoutout for Maria's birthday?",
+      "b": "It's Maria's birthday, say happy birthday to her!",
+      "merge": true,
+      "why": "Same person, same shoutout."
+    },
+    {
+      "a": "Can you share the slides?",
+      "b": "Can you share the recording?",
+      "merge": false,
+      "why": "Different items."
+    },
+    {
+      "a": "Can we take a break now?",
+      "b": "Can we end early today?",
+      "merge": false,
+      "why": "Different outcomes."
+    },
+    {
+      "a": "Shout out to Maria please",
+      "b": "Shout out to Jake please",
+      "merge": false,
+      "why": "Different people."
+    },
+    {
+      "a": "Can you speak louder?",
+      "b": "Can you speak slower?",
+      "merge": false,
+      "why": "Different changes."
+    },
+    {
+      "a": "Why is the sky blue?",
+      "b": "What makes the sky look blue during the day?",
+      "merge": true,
+      "why": "Paraphrase."
+    },
+    {
+      "a": "Will the slides be shared?",
+      "b": "When will the slides be shared?",
+      "merge": false,
+      "why": "Whether versus when; borderline, scores near the threshold."
+    },
+    {
+      "a": "How does climate change affect polar bears?",
+      "b": "How does climate change affect arctic animals?",
+      "merge": false,
+      "why": "Specific species versus a broader group, like sharks and ocean animals.",
+      "known": "Merges under current instructions; polar bears may be the central example of arctic animals."
+    }
+  ]
+}
