@@ -19,7 +19,8 @@ single-machine prototype for local use.
 By default the port is bound to loopback on the host. Inside the container the server listens
 on all interfaces, which allows Docker's port forwarding. Without an organizer
 token, localhost organizer controls are shared. The published Sites demo gives
-each visitor a separate sandbox; it does not provide a shared remote event room.
+each visitor a private walkthrough sandbox and lets each browser create one
+shareable 24-hour task; see [LIVE_DEMO.md](LIVE_DEMO.md).
 
 ### Optional grouping and organizer login
 
@@ -141,7 +142,7 @@ repository because Docker uses them internally.
 | Database not ready / `no such table: rooms` | Rebuild and recreate with `docker compose up --build -d`; inspect container logs for migration failures |
 | “AI grouping needs your own TypeSafe key” | Set `TYPESAFE_API_KEY` in `.env` and recreate the container |
 | Organizer controls disabled | Sign in with the organizer token; local automatic access requires an empty `ORGANIZER_TOKEN` |
-| Participant link opens the wrong computer | `127.0.0.1` refers to the same machine; Docker is local, and the Sites demo isolates visitors |
+| Participant link opens the wrong computer | `127.0.0.1` refers to the same machine; set `MERGEPOLL_HOST=0.0.0.0` and share the LAN IP instead |
 | “No new questions” | Expected: the model is skipped when no new active question needs processing |
 | Countdown does not run in the background | Keep an authenticated Organizer view open; this prototype has no server scheduler |
 | Docker build fails | Inspect the build output; the Dockerfile supplies the supported Node version |

@@ -9,7 +9,7 @@ data or actionable exploit details in a public issue. If sensitive details are
 needed, ask the maintainer to arrange a private reporting channel before sharing
 them. There is no promised response time or bounty program.
 
-MergePoll is an experimental, single-room prototype. Only the latest version
+MergePoll is an experimental prototype. Only the latest version
 on `main` is maintained; stable releases and production support are not promised.
 
 ## Before hosting
@@ -36,14 +36,21 @@ secrets or user data. `.dev.vars`, environment files and local D1 state are igno
 
 ## Public experiment
 
-The hosted experiment opts into `PUBLIC_DEMO=true`, which gives each browser
-an isolated organizer sandbox via an opaque HttpOnly cookie. The normal shared
-room stays behind organizer authentication on deployments without that flag.
-The demo uses its own server key, a 12-question cap, three model attempts per
-session, a one-minute cooldown and an atomic 100-attempt daily counter in D1.
-Clearing cookies bypasses the per-session allowance but cannot bypass the global
-counter. This bounds requests rather than guaranteeing a monetary spending cap.
-The demo database has no automatic expiry cleanup. Use synthetic questions only.
+The hosted experiment opts into `PUBLIC_DEMO=true`. An opaque HttpOnly cookie
+gives each browser a private climate walkthrough sandbox and organizer access to
+the custom task it creates. Custom tasks use random `/room/<UUID>` participant
+links; holding the link allows asking and voting, not organizer actions. The
+normal shared room stays behind organizer authentication on deployments without
+that flag.
+
+The demo uses its own server key and limits each task to 100 questions and 40
+live grouping attempts, at least one minute apart. Atomic daily counters in D1
+cap all browsers at 500 attempts and 100,000 new pair comparisons (UTC). Each
+browser can hold one active custom task; tasks expire 24 hours after creation
+and an hourly cleanup deletes expired rows. Clearing cookies bypasses the
+per-browser limit but not the shared daily counters. This bounds requests rather
+than guaranteeing a monetary spending cap. Legacy personal demo rooms have no
+automatic expiry. Use synthetic questions only. See [LIVE_DEMO.md](docs/LIVE_DEMO.md).
 
 Docker publishes its port on host loopback by default, persists D1 in a named
 volume and excludes secrets from the image build context. Runtime secrets live

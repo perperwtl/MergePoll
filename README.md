@@ -52,6 +52,8 @@ be wrong; inspect and split groups when needed.
   mark it answered and reopen it later.
 - **See the experiment:** inspect probabilities, request timing and model usage
   in the grouping lab. Cached decisions avoid repeat comparisons.
+- **Switch language:** the interface is available in English and Simplified
+  Chinese.
 - **Skip idle work:** cycles with no new questions show “No new questions” and
   avoid calling the model.
 - **Run independently:** local D1 storage and an optional organizer token;
@@ -138,13 +140,16 @@ The lab's tiny sample is a sanity check, **not a general accuracy benchmark**.
 
 This is an experimental prototype, with:
 
-- **One shared room**, with no application question-count or grouping-attempt quota in Docker. Each post is limited to 500 characters.
+- **One shared room in Docker**, with no application question-count or
+  grouping-attempt quota. Hosted tasks have the limits above. Each post is
+  limited to 500 characters.
 - Automatic grouping while an authenticated Organizer view is open; no background
   server scheduler.
 - Supporters deduplicated by browser token, not verified people.
 - Pairwise comparison that grows with question count; large-event scalability
   has not been demonstrated.
-- No built-in moderation queue, QR generator, multi-event management or retention policy.
+- No built-in moderation queue, QR generator or multi-event management; Docker
+  has no retention policy (hosted tasks are deleted after 24 hours).
 - Questions anonymous in the displayed queue, not guaranteed anonymous to the
   host or model provider. See [SECURITY.md](SECURITY.md).
 
@@ -163,6 +168,7 @@ checks on pushes and pull requests.
 | --- | --- |
 | `app/page.tsx` | Product introduction |
 | `app/room/page.tsx` | Organizer and participant UI |
+| `app/new/page.tsx` | Task setup |
 | `app/api/room/route.ts` | Shared room state and actions |
 | `app/api/organizer/route.ts` | Organizer login and logout |
 | `lib/grouping.ts` | Jev request, cached scores and clustering |
@@ -171,6 +177,8 @@ checks on pushes and pull requests.
 | `migrations/` | D1 schema |
 | `Dockerfile`, `compose.yaml`, `docker/` | Container build, persistent storage and automatic setup |
 | `lib/demo-session.ts` | Visitor sandbox sessions and hosted demo limits |
+| `lib/shared-task.ts`, `app/api/tasks/cleanup/route.ts` | Hosted 24-hour tasks and expiry cleanup |
+| `lib/translations.ts`, `app/language.tsx` | English and Simplified Chinese interface text |
 
 The stack is React, TypeScript, Tailwind CSS, Vinext/Vite and Cloudflare Workers
 with D1. See [how grouping works](docs/HOW_IT_WORKS.md).

@@ -15,8 +15,10 @@
 4. Show the organizer splitting a group and marking it answered.
 5. Show the GitHub quick start and invite examples that expose mistakes.
 
-Use synthetic questions. Explain that this is a one-room prototype with a
-30-open-question limit, and label any fixed screenshots or prepared output.
+Use synthetic questions. Explain that this is an experimental prototype: hosted
+tasks last 24 hours and allow 100 questions and 40 live grouping attempts, while
+Docker runs one shared room without app-imposed quotas. Label any fixed
+screenshots or prepared output.
 
 ## Suggested announcement
 
@@ -42,8 +44,10 @@ sandbox helps. Consider Product Hunt after successful pilots and polished onboar
 
 The [Show HN guidelines](https://news.ycombinator.com/showhn.html) favor something
 people can try, ideally without signup barriers. Do not ask for coordinated votes.
-The Sites experiment is public and requires no account or personal API key. Each
-browser has its own sandbox with limited model usage; link to [demo details](LIVE_DEMO.md).
+The Sites experiment is public and requires no account or personal API key. The
+climate walkthrough is a private browser sandbox, and each browser can create one
+24-hour custom task with a shareable participant link. Model usage is limited per
+task and by shared daily budgets; link to [demo details](LIVE_DEMO.md).
 
 ## Pilot feedback
 
