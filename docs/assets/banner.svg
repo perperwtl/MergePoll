@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="title desc">
+  <title id="title">MergePoll</title>
+  <desc id="desc">Many ways to ask. One shared response. Three questions come together in one audience queue.</desc>
+  <rect width="1200" height="300" rx="24" fill="#26362d"/>
+  <circle cx="1070" cy="70" r="200" fill="#354b37"/>
+  <circle cx="1100" cy="290" r="160" fill="#3d523c"/>
+  <rect x="60" y="62" width="60" height="60" rx="18" fill="#c9d9ad"/>
+  <path d="M73 92h9l6-17 9 35 7-20h7" fill="none" stroke="#2d4130" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <text x="138" y="108" font-family="Arial,Helvetica,sans-serif" font-size="44" font-weight="700" fill="#f4f6e9">Merge<tspan fill="#bdd1a2">Poll</tspan></text>
+  <text x="60" y="175" font-family="Arial,Helvetica,sans-serif" font-size="29" fill="#f4f6e9">Many ways to ask.</text>
+  <text x="60" y="215" font-family="Arial,Helvetica,sans-serif" font-size="29" fill="#bdd1a2">One shared response.</text>
+  <text x="60" y="259" font-family="Arial,Helvetica,sans-serif" font-size="13" letter-spacing="2" fill="#a6b7a3">LIVE Q&amp;A · AUDIENCE REQUESTS · ORGANIZER CONTROL</text>
+  <g fill="none" stroke="#9fb58a" stroke-width="2" opacity=".65"><path d="M865 80h32q15 0 15 20v30q0 20 20 20h34"/><path d="M865 150h100"/><path d="M865 220h32q15 0 15-20v-30q0-20 20-20h34"/></g>
+  <g font-family="Arial,Helvetica,sans-serif" font-size="16">
+    <rect x="690" y="55" width="175" height="50" rx="12" fill="#f4f6e9"/><text x="710" y="86" fill="#354b37">Why is sea level…?</text>
+    <rect x="690" y="125" width="175" height="50" rx="12" fill="#f4f6e9"/><text x="710" y="156" fill="#354b37">What makes…?</text>
+    <rect x="690" y="195" width="175" height="50" rx="12" fill="#f4f6e9"/><text x="710" y="226" fill="#354b37">Why do oceans…?</text>
+    <rect x="965" y="110" width="180" height="80" rx="15" fill="#c9d9ad"/><text x="985" y="142" fill="#354b37" font-weight="700">One shared answer</text><text x="985" y="168" fill="#536b47" font-size="13">3 voices, preserved</text>
+  </g>
+</svg>

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Commercial permission
+    url: mailto:perperwtl@gmail.com
+    about: Contact the maintainer before commercial use.
+  - name: Security report
+    url: mailto:perperwtl@gmail.com
+    about: Disclose vulnerabilities privately.

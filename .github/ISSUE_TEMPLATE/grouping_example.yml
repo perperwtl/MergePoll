@@ -1,0 +1,35 @@
+name: Grouping example
+description: Share questions that should merge or stay separate.
+title: "[Grouping] "
+body:
+  - type: markdown
+    attributes:
+      value: "Use synthetic or consented examples only. No private event content or identifying details."
+  - type: textarea
+    id: context
+    attributes:
+      label: Event context and question texts
+    validations:
+      required: true
+  - type: dropdown
+    id: expectation
+    attributes:
+      label: Expected outcome
+      options:
+        - Merge — one concise response covers both
+        - Separate — different answers or actions needed
+        - Uncertain — needs organizer judgment
+    validations:
+      required: true
+  - type: textarea
+    id: reason
+    attributes:
+      label: Why?
+      description: Explain which answer or action would satisfy the questions.
+    validations:
+      required: true
+  - type: input
+    id: actual
+    attributes:
+      label: Actual result, if tested
+      placeholder: "Version, model, threshold, pair score and observed group"

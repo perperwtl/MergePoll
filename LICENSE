@@ -1,0 +1,137 @@
+MergePoll Noncommercial Share-Alike License 1.0
+License identifier: LicenseRef-MergePoll-NC-SA-1.0
+
+Copyright (c) 2026 perperwtl
+Commercial licensing contact: perperwtl@gmail.com
+
+This is a custom source-available software license. It is not the GNU AGPL,
+the PolyForm Noncommercial License, or an OSI-approved open-source license.
+
+1. Definitions
+
+"Licensor" means the copyright holder offering Covered Software under these
+terms. "Covered Software" means MergePoll files offered under this license,
+including copyrightable modifications and adaptations of those files. Files
+expressly identified as third-party materials under other licenses are not
+Covered Software; their own licenses continue to govern them.
+
+"You" means the individual or entity exercising rights under this license.
+"Distribute" means to provide copies of Covered Software to another person
+or entity, including executable copies, source copies, containers and bundles.
+"Hosted Modification" means a modified or adapted version of Covered Software
+that You make available for other users to interact with over a network.
+
+"Complete Source" means the preferred form for modifying the exact version of
+Covered Software You distribute or host, including Your changes, necessary
+build and installation scripts, dependency manifests and lockfiles, database
+migrations and sufficient configuration examples and instructions to build and
+run it. It does not include passwords, API keys, private certificates, user
+data, personal information or private database contents. Independently licensed,
+unmodified dependencies may be identified by version and a source location
+rather than copied into Your source release. Separate works communicating
+through ordinary interfaces are not automatically Covered Software.
+
+2. Permission for noncommercial and institutional purposes
+
+Subject to all conditions below, Licensor grants You a worldwide, royalty-free,
+nonexclusive copyright license to use, reproduce, run, study, modify, adapt
+and distribute Covered Software for the following permitted purposes:
+
+(a) Any noncommercial purpose: a purpose that is not directed toward commercial
+advantage or monetary compensation. Personal study, experimentation, hobby
+projects, unpaid community events and noncommercial research are examples.
+
+(b) Use by an educational institution, charitable organization, public research
+organization, public safety or health organization, environmental protection
+organization, or government institution for that institution's own activities,
+regardless of its funding sources, tuition, grants or fees for those activities.
+Modifications made and services hosted by such an institution for its own
+activities are also permitted. "Institutional" does not mean every incorporated
+entity; an ordinary commercial company is not exempt merely because it is an
+organization. This exception does not authorize an outside vendor to sell
+software, hosting, integration or support to an institution without permission.
+
+These permissions are subject to the source-sharing conditions in section 3,
+including for institutional users. Merely donating voluntarily to support a
+noncommercial project does not make that project commercial, provided payment
+is not required for access, features, hosting, support or other benefits.
+
+Commercial use outside the institutional exception requires a separate written
+agreement with Licensor before that use begins. Examples include selling or
+licensing Covered Software, paid hosting, a competing commercial service,
+commercial internal business operations and integration into a commercial
+product or revenue-generating event. Offering a service at no charge does not
+make its use noncommercial if it is directed toward commercial advantage,
+including advertising revenue or promotion of a commercial business.
+
+3. Source sharing and same-license conditions
+
+(a) When You Distribute Covered Software, You must provide its Complete Source
+to every recipient, either with the copy or through a working, clearly stated
+download link at no additional charge. The source must match the version
+distributed. Preserve this license, applicable copyright and attribution
+notices, and identify material modifications You made.
+
+(b) When You operate a Hosted Modification, You must prominently offer every
+user a working link to its Complete Source at no charge. A visible "Source code"
+link in the application's interface is sufficient if it identifies the exact
+served version and includes the materials required by section 1. Keep that
+source accessible throughout the period You operate that version. Linking only
+to the unmodified upstream project does not satisfy this condition for a fork.
+
+(c) License Your copyrightable modifications and adaptations of Covered Software
+under this same license when You Distribute them or operate a Hosted Modification.
+Recipients and network users receive the rights in this license directly from
+each applicable copyright holder. You may not add legal or technical restrictions
+that prevent them from exercising those rights in the source You provide.
+
+(d) Private modifications that You neither Distribute nor offer to other users
+over a network do not have to be published. This license does not require that
+all private work be posted on GitHub or that all source offers be public to the
+entire world; the required recipients and network users must have access.
+
+(e) These conditions do not relicense independently licensed third-party files,
+dependencies or separate works. Preserve their notices and comply with their
+licenses. You may not combine Covered Software with another work in a way
+that makes compliance with both licenses impossible.
+
+4. Patent permission
+
+Licensor grants You a worldwide, royalty-free, nonexclusive patent license for
+patent claims Licensor controls that are necessarily infringed by using Licensor's
+Covered Software as permitted here. If You initiate a patent infringement claim
+alleging that Covered Software infringes a patent, this patent license terminates.
+
+5. Other rights and separate agreements
+
+No trademark rights are granted. Modified versions must not imply endorsement
+by the upstream maintainer. Nothing here limits fair use or other rights You
+have independently under applicable law. Licensor may offer separate commercial
+or other licenses for rights Licensor owns or is authorized to license. Such
+an agreement must expressly identify any exceptions to these terms. This license
+does not promise support, hosted service access or third-party API credits.
+
+6. Termination and reinstatement
+
+Your rights terminate automatically if You violate these conditions. Rights
+are reinstated if You cure the violation within 30 days after first receiving
+written notice from Licensor, unless this reinstatement has already been used
+for an earlier violation. Licensor may also reinstate rights in writing.
+Termination of Your rights does not terminate the licenses of recipients who
+remain in compliance. Subject to compliance, granted permissions are irrevocable
+for the copies and versions already received under this license.
+
+7. Disclaimer and limitation of liability
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, COVERED SOFTWARE IS PROVIDED "AS IS",
+WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. LICENSOR AND CONTRIBUTORS
+ARE NOT LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT,
+TORT OR OTHERWISE, ARISING FROM THE SOFTWARE, ITS USE OR THESE TERMS.
+
+8. Acceptance and severability
+
+By exercising rights granted here, You accept these conditions. If a provision
+is unenforceable under applicable law, the remaining provisions remain in effect
+to the extent permitted by law. This license grants only the rights it expressly
+states; all other rights are reserved.
