@@ -18,3 +18,6 @@ playwright-report/
 test-results/
 # Separate Sites source checkout; hosted app changes also live in app/ and lib/.
 /sites/
+
+# Local maintainer notes for the hosted demo; not public project documentation.
+/.maintainer/

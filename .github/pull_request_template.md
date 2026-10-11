@@ -4,9 +4,9 @@ Describe the problem and the resulting behavior. Link an issue if applicable.
 
 ## Validation
 
-- [ ] `npm run typecheck`
-- [ ] `npm test`
-- [ ] `npm run build`
+- [ ] Docker build stage succeeds
+- [ ] Formatting, typechecking and tests pass using the Docker development checks
+- [ ] Local Docker app works after rebuilding
 - [ ] Screenshots or a short clip attached for visible UI changes
 - [ ] No secrets, real participant data or private deployment configuration included
 - [ ] I have read and accept [CLA.md](https://github.com/perperwtl/MergePoll/blob/main/CLA.md), and I have authority to grant the rights described there for this contribution.

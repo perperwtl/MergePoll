@@ -15,7 +15,8 @@ an issue before implementing them so the design and scope can be agreed on.
 1. Fork and clone the repository.
 2. Follow the [quick start](README.md#quick-start).
 3. Create a branch for your change.
-4. Run `npm run format`, `npm run typecheck`, `npm test` and `npm run build`.
+4. Run the [Docker development checks](docs/SELF_HOSTING.md#development-checks-in-docker)
+   and rebuild the local app to verify your change.
 5. Open a pull request describing the problem, resulting behavior and checks.
    Include screenshots for visible UI changes.
 
@@ -30,7 +31,7 @@ fixtures or screenshots.
   questions, unrelated requests and false merges. Supply synthetic or consented
   text with your expected grouping and rationale.
 - **Accessibility:** keyboard navigation, dialog focus, contrast and small-screen use.
-- **Independent hosting:** clearer setup, operational limits and deployment checks.
+- **Docker setup:** clearer instructions, operational limits and local runtime checks.
 - **Roadmap:** see [planned work](docs/ROADMAP.md).
 
 ## Contribution rights

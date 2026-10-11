@@ -1,4 +1,4 @@
-# Run MergePoll on your own machine or Worker
+# Run MergePoll with Docker
 
 ## Docker quick start
 
@@ -14,12 +14,12 @@ docker compose up --build -d
 Open **http://localhost:5173**. The container handles Node.js, locked npm
 dependencies, the app build and database migrations. It runs the built Worker
 with Wrangler's local D1 emulator; no Cloudflare account is needed. This is a
-single-machine prototype, not a production replacement for Cloudflare Workers.
+single-machine prototype for local use.
 
 The port is bound to loopback on the host. Inside the container the server listens
 on all interfaces, which allows Docker's port forwarding. Without an organizer
-token, localhost organizer controls are shared. For real remote events, use the
-Worker deployment below with an organizer token.
+token, localhost organizer controls are shared. The published Sites demo gives
+each visitor a separate sandbox; it does not provide a shared remote event room.
 
 ### Optional grouping and organizer login
 
@@ -66,88 +66,43 @@ To restore, stop the service and copy the saved directory contents back with
 `docker compose cp ./mergepoll-backup/. mergepoll:/app/.wrangler/state`, then start.
 Keep the backup private; it contains questions and browser identities.
 
-## Source development (optional)
+## Configuration
 
-Only contributors need host Node.js **22.13+** (Node 24 in `.nvmrc`) and npm:
+| Setting | Docker behavior | Purpose |
+| --- | --- | --- |
+| `TYPESAFE_API_KEY` | Optional value in `.env` | Real Jev grouping |
+| `ORGANIZER_TOKEN` | Optional value in `.env` | Private organizer login; sessions expire after 12 hours |
+| `MERGEPOLL_PORT` | `.env`, default 5173 | Host port |
+| `LOCAL_DEMO` | Container sets `true`; a configured token takes precedence | Local organizer access |
+| `PUBLIC_DEMO` | Container forces `false` | Docker uses one shared room |
+| `DB` | Local D1 state in the named volume | Room persistence |
+| `SOURCE_URL` | `lib/project.ts` | Source for the served version |
+
+## Development checks in Docker
+
+After editing source, rebuild with `docker compose up --build -d`. The container
+runs the compiled app; source changes require a rebuild.
+
+Use the Dockerfile's build stage to run contributor checks without host Node.js:
 
 ```bash
-npm ci
-cp .dev.vars.example .dev.vars
-npm run db:migrate
-npm run dev
+docker build --target build -t mergepoll-check .
+docker run --rm --entrypoint npm mergepoll-check run format:check
+docker run --rm --entrypoint npm mergepoll-check run typecheck
+docker run --rm --entrypoint npm mergepoll-check test
 ```
 
-Open http://localhost:5173. Set secrets in `.dev.vars` for this workflow and
-restart after edits. Local state persists in `.wrangler/`. Signed organizer
-sessions expire after 12 hours; rotating the token invalidates them.
+The image build runs `npm run build` internally. These checks use synthetic data
+and do not require API keys. If formatting needs repair, run Prettier through a
+Node container with the source directory mounted, or use your editor's formatter;
+formatting inside the check image does not modify your working tree.
 
-| Setting | Docker | Source / Worker | Purpose |
-| --- | --- | --- | --- |
-| `TYPESAFE_API_KEY` | `.env` | `.dev.vars` / Worker secret | Real Jev grouping |
-| `ORGANIZER_TOKEN` | `.env` | `.dev.vars` / Worker secret | Private organizer login |
-| `MERGEPOLL_PORT` | `.env`, default 5173 | Vite/Wrangler port argument | Host port |
-| `LOCAL_DEMO` | Container sets `true` | Dev sets `true`; keep `false` on Worker | Local sandbox only |
-| `PUBLIC_DEMO` | Container forces `false` | Optional hosted demo variable | Separate visitor sandboxes; see [live demo](LIVE_DEMO.md) |
-| `DB` | Named volume with local D1 | D1 binding | Room persistence |
-| `SOURCE_URL` | `lib/project.ts` | `lib/project.ts` | Source for hosted version |
+## Supported setup
 
-## Cloudflare Workers deployment
-
-You need a Cloudflare account and permission to create a Worker and D1 database.
-Check [license permissions](LICENSING.md) for your deployment's purpose first.
-
-1. Install dependencies and authenticate:
-
-   ```bash
-   npm ci
-   npx wrangler login
-   npx wrangler d1 create mergepoll
-   ```
-
-2. Put the returned **database ID** in `wrangler.jsonc`, replacing the all-zero
-   local placeholder. You can also change the Worker name to avoid collisions;
-   use that name for the secret commands below. Keep `LOCAL_DEMO` set to `false`.
-
-3. Apply the database schema to the remote database:
-
-   ```bash
-   npx wrangler d1 migrations apply mergepoll --remote
-   ```
-
-4. Set private secrets using Wrangler's interactive prompts. Never paste secrets
-   into committed files or command-line arguments:
-
-   ```bash
-   npx wrangler secret put ORGANIZER_TOKEN --name mergepoll
-   npx wrangler secret put TYPESAFE_API_KEY --name mergepoll
-   ```
-
-   If Wrangler asks to create the Worker because it does not yet exist, let it
-   create it. Use a randomly generated token with at least 32 bytes of entropy.
-   For example, generate one locally with `openssl rand -hex 32` and store it
-   privately. Give the token only to the organizer.
-
-5. If you modified the project, update `SOURCE_URL` in `lib/project.ts` to the
-   complete source for your served version. Run checks and deploy:
-
-   ```bash
-   npm run typecheck
-   npm test
-   npm run deploy
-   ```
-
-6. Open the Worker URL, select **Organizer** and sign in. Share
-   `/room?view=participant` with attendees; that link contains no organizer secret.
-   Confirm a participant browser cannot reset, regroup, change settings or mark
-   questions answered. Test the grouping with your own key and confirm its usage.
-
-The built Worker config is `dist/server/wrangler.json`. `npm run preview` runs
-that build locally; it uses production permissions, so configure an organizer
-token for organizer access. Remote deployment and real model calls are separate
-from the repository's automated tests.
-
-Before a wide public launch, add rate limiting, spending controls, moderation
-and a communicated retention policy. See [SECURITY.md](../SECURITY.md).
+Docker is the supported setup for running your own copy. The public hosted demo
+lets visitors try MergePoll quickly; it is separate from this local setup.
+Wrangler, the Worker build configuration and local migrations remain in the
+repository because Docker uses them internally.
 
 ## Troubleshooting
 
@@ -156,13 +111,13 @@ and a communicated retention policy. See [SECURITY.md](../SECURITY.md).
 | Docker cannot connect to daemon | Start Docker Desktop or the Docker Engine service |
 | Port already in use | Set a different `MERGEPOLL_PORT` in `.env`, then run `docker compose up -d` |
 | Container unhealthy | Inspect `docker compose logs mergepoll`; check migrations and available disk/memory |
-| Database not ready / `no such table: rooms` | Restart the container to apply migrations, or run `npm run db:migrate` for source development; for a Worker use the remote migration command |
-| “A server-side TypeSafe key is required” | Set `TYPESAFE_API_KEY` in `.env` and recreate the container; use `.dev.vars` for development or a Worker secret |
-| Organizer controls disabled | Sign in with the organizer token; local automatic access requires no token and the dev server |
-| Participant link opens the wrong computer | `127.0.0.1` only refers to the same machine; deploy before sharing with remote attendees |
+| Database not ready / `no such table: rooms` | Rebuild and recreate with `docker compose up --build -d`; inspect container logs for migration failures |
+| “A server-side TypeSafe key is required” | Set `TYPESAFE_API_KEY` in `.env` and recreate the container |
+| Organizer controls disabled | Sign in with the organizer token; local automatic access requires an empty `ORGANIZER_TOKEN` |
+| Participant link opens the wrong computer | `127.0.0.1` refers to the same machine; Docker is local, and the Sites demo isolates visitors |
 | “No new questions” | Expected: the model is skipped when no new active question needs processing |
 | Countdown does not run in the background | Keep an authenticated Organizer view open; this prototype has no server scheduler |
-| Build fails on an older Node version | Use Node 24 with `nvm use`, or another supported Node version |
+| Docker build fails | Inspect the build output; the Dockerfile supplies the supported Node version |
 
 `Reset test questions` replaces the room's questions, votes and history. It does
 not remove the database schema. Back up anything you need before resetting.

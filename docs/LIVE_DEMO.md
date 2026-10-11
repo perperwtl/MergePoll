@@ -37,10 +37,9 @@ hosting access. Question text and event context go to TypeSafe during grouping.
 ## Hosted source
 
 The demo's application code is in `app/` and `lib/` in this repository.
-Set `PUBLIC_DEMO=true` in the hosted environment to enable browser sandboxes;
-normal Docker/Worker hosting retains the shared-room organizer-token workflow.
-The Sites checkout retains its `sites()` build integration, storage manifest and
-schema migrations. Keys are configured with the Sites runtime secret tools.
+The maintainer's demo uses browser sandboxes; local Docker uses a shared room
+with optional organizer authentication. Docker is the supported setup for
+running your own copy. The hosted demo is provided for quick visitor trials.
 
 The [hosted build overlay](../hosting/sites/README.md) includes its lockfile,
 retained build scripts and migration history so the served version can be rebuilt.

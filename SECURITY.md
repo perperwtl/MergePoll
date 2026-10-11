@@ -14,11 +14,11 @@ on `main` is maintained; stable releases and production support are not promised
 
 ## Before hosting
 
-- Configure a long, random `ORGANIZER_TOKEN` as a Worker secret. Never put it in
-  a URL, frontend environment variable or repository. Login uses a signed,
+- Configure a long, random `ORGANIZER_TOKEN` in Docker's `.env`. Never put it
+  in a URL, frontend environment variable or repository. Login uses a signed,
   HTTP-only session cookie that expires after 12 hours.
-- Keep `LOCAL_DEMO` set to `false` for deployed Workers. The development server
-  enables a localhost sandbox only when no organizer token is configured.
+- Docker enables local organizer access only when no organizer token is
+  configured.
 - Add deployment-level rate limiting for login and participant submissions,
   spending controls and event moderation before opening a demo to a large audience.
 - Provide your own TypeSafe key and check its service terms and data practices.

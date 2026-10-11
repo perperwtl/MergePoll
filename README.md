@@ -98,7 +98,7 @@ grouping passes**, with a **one-minute cooldown** and **12 open questions**.
 There is also a shared **100-pass daily model budget (UTC)**. Resetting questions
 does not reset the allowance. Automatic grouping starts disabled. A different
 browser gets a different sandbox, so this demo is for individual exploration;
-use Docker or a deployed Worker for a shared audience room.
+use Docker for a shared room on your own machine.
 
 Use synthetic questions: grouping sends text to TypeSafe. Scores vary and this
 small experiment is not a general accuracy benchmark. See [demo details](docs/LIVE_DEMO.md).
@@ -141,13 +141,11 @@ This is an experimental prototype, with:
 
 ## Development
 
-```bash
-npm run typecheck
-npm test
-npm run build
-```
-
-For source development without Docker, see [the developer setup](docs/SELF_HOSTING.md#source-development-optional).
+Develop the application with your editor or coding agent, then rebuild Docker
+with `docker compose up --build -d`. Run contributor checks using the
+[Docker build stage](docs/SELF_HOSTING.md#development-checks-in-docker).
+Docker is the supported setup for running your own copy. The hosted demo is
+provided so visitors can try the application quickly.
 
 Tests use synthetic data and do not require a key or call TypeSafe. CI runs these
 checks on pushes and pull requests.

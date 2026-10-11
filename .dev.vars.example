@@ -1,7 +1,0 @@
-# Copy this file to .dev.vars. Never commit .dev.vars.
-# Optional for browsing/posting/voting; required for live Jev grouping.
-# TYPESAFE_API_KEY=your-own-typesafe-key
-
-# Optional on localhost; required before deployment.
-# Generate a long random token and keep it private.
-# ORGANIZER_TOKEN=your-own-long-random-token
