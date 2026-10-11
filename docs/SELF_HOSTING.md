@@ -3,7 +3,7 @@
 ## Docker quick start
 
 Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) on Windows
-or macOS, or Docker Engine plus Compose v2+ on Linux. Start Docker before running:
+or macOS, or Docker Engine plus Compose v2.24+ on Linux. Start Docker before running:
 
 ```bash
 git clone https://github.com/perperwtl/MergePoll.git
@@ -34,6 +34,12 @@ with `openssl rand -hex 32` if available. Then apply changes:
 ```bash
 docker compose up -d
 ```
+
+Docker reads credentials only from this checkout’s `.env` file. A
+`TYPESAFE_API_KEY` exported in your shell is not passed into the container. There
+is no bundled key or fallback to the maintainer’s demo key. The browser displays
+a setup notice when no key is configured; credentials are configured by the
+Docker operator, not collected from participants.
 
 Docker Compose recreates the container when the environment changes. Merely
 restarting an existing container does not reload `.env`. Secrets are supplied
@@ -112,7 +118,7 @@ repository because Docker uses them internally.
 | Port already in use | Set a different `MERGEPOLL_PORT` in `.env`, then run `docker compose up -d` |
 | Container unhealthy | Inspect `docker compose logs mergepoll`; check migrations and available disk/memory |
 | Database not ready / `no such table: rooms` | Rebuild and recreate with `docker compose up --build -d`; inspect container logs for migration failures |
-| “A server-side TypeSafe key is required” | Set `TYPESAFE_API_KEY` in `.env` and recreate the container |
+| “AI grouping needs your own TypeSafe key” | Set `TYPESAFE_API_KEY` in `.env` and recreate the container |
 | Organizer controls disabled | Sign in with the organizer token; local automatic access requires an empty `ORGANIZER_TOKEN` |
 | Participant link opens the wrong computer | `127.0.0.1` refers to the same machine; Docker is local, and the Sites demo isolates visitors |
 | “No new questions” | Expected: the model is skipped when no new active question needs processing |

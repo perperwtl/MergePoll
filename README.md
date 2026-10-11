@@ -62,8 +62,9 @@ small event Q&A sessions. Concert requests are an experimental use case.
 
 ## Quick start
 
-You need **Docker Desktop** (Windows/macOS) or **Docker Engine with Compose v2+**
-(Linux), plus Git. No host Node.js, npm, database setup or Cloudflare account is needed.
+You need **Docker Desktop** (Windows/macOS) or **Docker Engine with Compose v2.24+**
+(Linux), plus Git. Docker Desktop must include Compose v2.24 or newer.
+No host Node.js, npm, database setup or Cloudflare account is needed.
 
 ```bash
 git clone https://github.com/perperwtl/MergePoll.git
@@ -77,7 +78,9 @@ ten Climate Change 101 questions. Data stays in a named volume across restarts.
 
 **To enable real grouping:** copy `.env.example` to `.env`, add your own
 `TYPESAFE_API_KEY`, then run `docker compose up -d` again. Browsing, posting,
-voting and answering work without a key. No key or API credits are included
+voting and answering work without a key. Docker reads credentials only from
+this checkout’s `.env`, not from your shell’s `TYPESAFE_API_KEY`. The app shows
+a setup notice until you configure a key. No key or API credits are included
 in the image. Questions and event context go to TypeSafe when you group.
 
 Optionally set a long random `ORGANIZER_TOKEN` in `.env` to test organizer login.

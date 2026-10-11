@@ -406,8 +406,17 @@ export default function Home() {
           )}
           {room.localDemo && (
             <div className="notice" role="status">
-              Local sandbox · Organizer controls are shared on this computer.
-              Set an organizer token before hosting.
+              Local shared room · Organizer controls are shared on this
+              computer. Set ORGANIZER_TOKEN in your Docker .env file to require
+              sign-in.
+            </div>
+          )}
+          {!room.publicDemo && !room.connected && (
+            <div className="notice" role="status">
+              AI grouping needs your own TypeSafe API key. The Docker operator
+              must copy .env.example to .env, set TYPESAFE_API_KEY, then run
+              docker compose up -d. No demo key is included. Posting and voting
+              work without a key.
             </div>
           )}
           {mode === "organizer" && !room.canTeach && (

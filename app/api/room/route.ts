@@ -186,7 +186,14 @@ export async function POST(req: Request) {
         return reply({ ...publicRoom(room, who), noNewQuestions: true });
       }
       if (!bindings().TYPESAFE_API_KEY)
-        return reply({ error: "A server-side TypeSafe key is required." }, 503);
+        return reply(
+          {
+            error: demo
+              ? "The demo's TypeSafe key is not configured."
+              : "AI grouping needs your own TypeSafe key. Set TYPESAFE_API_KEY in the Docker .env file, then run docker compose up -d.",
+          },
+          503,
+        );
       if (!snapshot.published)
         return reply({ error: "Publish the room before grouping." }, 409);
       await change(who, (r) => {

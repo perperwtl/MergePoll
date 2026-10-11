@@ -3,9 +3,10 @@ services:
     build: .
     ports:
       - "127.0.0.1:${MERGEPOLL_PORT:-5173}:5173"
-    environment:
-      TYPESAFE_API_KEY: ${TYPESAFE_API_KEY:-}
-      ORGANIZER_TOKEN: ${ORGANIZER_TOKEN:-}
+    # Read credentials only from this deployer's file, not the invoking shell.
+    env_file:
+      - path: .env
+        required: false
     volumes:
       - mergepoll-data:/app/.wrangler/state
     init: true

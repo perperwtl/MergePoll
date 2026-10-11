@@ -22,6 +22,10 @@ if (phase === "seed") {
   assert.equal(room.questions.length, 10);
   assert.equal(room.canTeach, true);
   assert.equal(room.connected, false);
+  assert.equal(room.publicDemo, false);
+  const missingKey = await post({ action: "group" });
+  assert.equal(missingKey.status, 503);
+  assert.match(missingKey.body.error, /your own TypeSafe key/);
   assert.equal((await fetch(base)).status, 200);
   assert.equal((await fetch(base + "/room")).status, 200);
   assert.equal(
