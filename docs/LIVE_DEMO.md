@@ -27,15 +27,16 @@ model budgets still apply across all browsers.
 ## Expiry and deletion
 
 At 24 hours the server refuses reads and writes, and the client closes the task.
-An expired task is deleted when accessed. The Site's hourly cleanup task calls
-`POST /api/tasks/cleanup` to delete expired task rows and browser reservations
-when nobody visits. Physical deletion may lag the deadline by up to an hour
-under normal scheduling; scheduler failures can delay it further. Access expiry
+An expired task is deleted when accessed. The Site's linked cleanup task calls the hosted
+`cleanup_expired_tasks` MCP tool to delete expired task rows and browser reservations
+when nobody visits. Physical deletion may lag the deadline until the next enabled cleanup run
+(currently configured every three hours); scheduler failures can delay it further. Access expiry
 does not depend on the schedule. Active tasks and Docker data are never selected
-by cleanup. The cutoff is server time and cannot be supplied by a caller.
+by cleanup. The cutoff is server time and cannot be supplied by a caller. A paused schedule
+does not remove unvisited expired records until it resumes.
 
-The cleanup task does not republish the Site or call the model. Its endpoint
-returns only a deleted-row count. No visitor identity or secret is needed to
+The cleanup task does not republish the Site or call the model. Its tool
+returns only a deleted-row count and check time. No visitor identity or secret is needed to
 trigger this bounded, idempotent removal of already-expired rows. This policy
 covers newly created shared tasks; legacy personal demo rooms are retained.
 
@@ -80,5 +81,8 @@ conservative UTF-8 byte bounds. This product cap is not Jev's question-count lim
 The shared code lives in root `app/` and `lib/`. The
 [hosted overlay](../hosting/sites/README.md) retains the build integration and
 D1 migrations. Tasks and reservations reuse the existing rooms table's JSON;
-this release requires no schema, binding, secret or access-policy changes. The
-hourly cleanup is one additional Site-linked cloud schedule.
+The cleanup integration adds the Site MCP capability without changing schema,
+bindings, secrets or audience. It reuses the existing Site-linked schedule.
+The task must call the connected cleanup tool rather than a shell HTTP client,
+whose cloud network proxy may be unavailable. The public HTTP cleanup endpoint
+is retained for operational checks. Docker exposes neither cleanup interface.
