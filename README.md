@@ -26,6 +26,10 @@
 
 ## Why MergePoll?
 
+For a visual introduction, open the [project website](https://perperwtl.github.io/MergePoll/).
+It includes interactive examples of the shared-answer rule.
+The website source and publication steps are in [the GitHub Pages guide](docs/GITHUB_PAGES.md).
+
 Audience questions often arrive in different words but need the same response.
 MergePoll asks **“Would one concise, useful answer or action satisfy both?”**
 It preserves original wording and gives the organizer control over mistakes.
