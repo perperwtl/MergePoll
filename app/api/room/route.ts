@@ -87,24 +87,39 @@ function targetFor(viewer: string, task: string | null): Target {
     key: task
       ? "task-" + task
       : bindings().PUBLIC_DEMO === "true"
-        ? viewer
+        ? "climate-" + viewer
         : "demo",
   };
 }
 async function read(target: Target) {
   const db = bindings().DB;
-  if (!target.task)
+  if (!target.task) {
+    const room = initial(
+      bindings().PUBLIC_DEMO === "true" ? target.viewer : "organizer",
+    );
+    if (bindings().PUBLIC_DEMO === "true") {
+      // Before shared tasks, custom setup replaced the browser's demo row.
+      // Give the climate walkthrough its own namespace; retain the old row.
+      const legacy = await db
+        .prepare("SELECT data FROM rooms WHERE id=?")
+        .bind(target.viewer)
+        .first<{ data: string }>();
+      if (legacy) {
+        const previous = JSON.parse(legacy.data) as Room;
+        // Preserve progress in an existing climate demo, but restore the seed
+        // when an older custom task replaced it. Neither path renews quotas.
+        if (previous.title === room.title)
+          Object.assign(room, previous, { owner: target.viewer });
+        room.demoRuns = previous.demoRuns;
+        room.demoLastAttempt = previous.demoLastAttempt;
+      }
+    }
+    room.revision = 0;
     await db
       .prepare("INSERT OR IGNORE INTO rooms (id,data,version) VALUES (?,?,0)")
-      .bind(
-        target.key,
-        JSON.stringify(
-          initial(
-            bindings().PUBLIC_DEMO === "true" ? target.viewer : "organizer",
-          ),
-        ),
-      )
+      .bind(target.key, JSON.stringify(room))
       .run();
+  }
   for (let i = 0; i < 8; i++) {
     const row = await db
       .prepare("SELECT data,version FROM rooms WHERE id=?")
